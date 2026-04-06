@@ -1,639 +1,478 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Clarity Check">
-  <title>Clarity Check</title>
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{
-      --bg:#f2f0ec;--surface:#fff;--text:#2b2926;--text2:#807b74;--border:#e6e2dc;
-      --accent:#5a7a6b;--accent-d:#4a6759;
-      --green:#6b9e7e;--green-bg:#e6f0ea;
-      --yellow:#bfa044;--yellow-bg:#f4edda;
-      --orange:#c07545;--orange-bg:#f4e6d8;
-      --red:#b25555;--red-bg:#f3dcdc;
-      --r:14px;--rs:10px;
-      --shadow:0 1px 4px rgba(44,41,38,.06);
-      --shadow-up:0 4px 16px rgba(44,41,38,.09);
-      --font:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,Helvetica,sans-serif;
-      --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)
-    }
-    html{font-size:16px;-webkit-text-size-adjust:100%}
-    body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.5;min-height:100dvh;-webkit-font-smoothing:antialiased;overflow-x:hidden;background-image:radial-gradient(circle at 20% 80%,rgba(90,122,107,.03) 0%,transparent 50%),radial-gradient(circle at 80% 20%,rgba(191,160,68,.03) 0%,transparent 50%)}
-    #app{max-width:480px;margin:0 auto}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Clarity">
+<meta name="theme-color" content="#111015">
+<title>Clarity Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#111015;--bg2:#19181f;--surf:#201f28;--surf2:#2a2933;--surf3:#33323d;
+  --tx:#eae8f2;--tx2:#a09cb0;--tx3:#6e6a7d;
+  --brd:#2e2d38;--brd2:#3a3946;
+  --ac:#7cc4a0;--ac2:#5fa882;--ac-g:rgba(124,196,160,.12);--ac-gl:rgba(124,196,160,.3);
+  --grn:#7cc4a0;--grn-b:rgba(124,196,160,.1);
+  --ylw:#d9bc5a;--ylw-b:rgba(217,188,90,.1);
+  --orn:#d98e5a;--orn-b:rgba(217,142,90,.1);
+  --red:#d96070;--red-b:rgba(217,96,112,.1);
+  --r:16px;--rs:12px;--rr:24px;
+  --sh:0 2px 16px rgba(0,0,0,.35);
+  --font:'IBM Plex Sans Hebrew',sans-serif;--fd:'Playfair Display',serif;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);
+  --nav-h:72px
+}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);line-height:1.5;min-height:100dvh;-webkit-font-smoothing:antialiased;overflow-x:hidden;padding-bottom:calc(var(--nav-h) + var(--sab) + 20px)}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 25% 0%,rgba(124,196,160,.04),transparent 55%),radial-gradient(ellipse at 75% 100%,rgba(217,188,90,.03),transparent 50%);pointer-events:none;z-index:0}
 
-    /* Top bar */
-    .top-bar{display:flex;align-items:center;justify-content:space-between;padding:calc(var(--sat) + 14px) 20px 8px;position:sticky;top:0;z-index:100;background:var(--bg)}
-    .app-title{font-size:1.2rem;font-weight:700;letter-spacing:-.03em}
-    .icon-btn{width:38px;height:38px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--border);border-radius:50%;color:var(--text2);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .12s}
-    .icon-btn:active{background:var(--border)}
+/* === APP SHELL === */
+#app{max-width:480px;margin:0 auto;position:relative;z-index:1}
 
-    /* Tabs */
-    .tab-bar{display:flex;gap:4px;padding:4px 20px 8px;position:sticky;top:calc(var(--sat) + 50px);z-index:99;background:var(--bg)}
-    .tab{flex:1;padding:9px 6px;border:none;background:transparent;color:var(--text2);font-family:var(--font);font-size:.85rem;font-weight:600;border-radius:var(--rs);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .18s}
-    .tab.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
-    .tab:active{transform:scale(.96)}
+/* Status bar */
+.status-bar{display:flex;align-items:center;justify-content:space-between;padding:calc(var(--sat) + 8px) 20px 4px;font-size:.68rem;color:var(--tx3)}
+.status-bar-right{display:flex;gap:8px;align-items:center}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--grn);animation:blink 3s infinite}
+@keyframes blink{0%,90%,100%{opacity:1}95%{opacity:.3}}
 
-    /* Tab content */
-    .tab-content{display:none;padding:0 20px 120px;animation:fadeUp .22s ease}
-    .tab-content.active{display:block}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* App header */
+.app-header{display:flex;align-items:center;justify-content:space-between;padding:8px 20px 14px}
+.app-header-left h1{font-family:var(--fd);font-size:1.5rem;font-weight:400;letter-spacing:-.01em}
+.app-header-left p{font-size:.78rem;color:var(--tx2);margin-top:1px}
+.header-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));display:grid;place-items:center;font-size:.85rem;font-weight:700;color:var(--bg);cursor:pointer;transition:transform .2s;box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--ac)}
+.header-avatar:active{transform:scale(.9)}
 
-    /* Cards */
-    .card{background:var(--surface);border-radius:var(--r);padding:18px 16px;margin-bottom:10px;box-shadow:var(--shadow)}
-    .card-label{font-size:.75rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:14px}
+/* === BOTTOM NAV === */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--bg2);border-top:1px solid var(--brd);padding:6px 0 calc(var(--sab) + 6px);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.bottom-nav-inner{max-width:480px;margin:0 auto;display:flex;justify-content:space-around;align-items:center}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;border:none;background:none;color:var(--tx3);font-family:var(--font);font-size:.65rem;font-weight:500;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .2s;position:relative}
+.nav-item.active{color:var(--ac)}
+.nav-item.active::before{content:'';position:absolute;top:-6px;width:20px;height:2px;background:var(--ac);border-radius:1px}
+.nav-icon{width:22px;height:22px}
+.nav-badge{position:absolute;top:2px;right:4px;width:8px;height:8px;border-radius:50%;background:var(--red);border:2px solid var(--bg2)}
 
-    /* Fields */
-    .field{margin-bottom:16px}.field:last-child{margin-bottom:0}
-    .field-label{display:block;font-size:.88rem;font-weight:500;margin-bottom:8px;line-height:1.4}
+/* === SCREENS === */
+.screen{display:none;padding:0 20px 20px;animation:screenIn .3s cubic-bezier(.22,1,.36,1)}.screen.active{display:block}
+@keyframes screenIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-    /* Sleep */
-    .sleep-input{display:flex;align-items:center;justify-content:center;gap:18px}
-    .sleep-btn{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--border);background:var(--bg);font-size:1.3rem;color:var(--text);cursor:pointer;display:grid;place-items:center;font-family:var(--font);-webkit-tap-highlight-color:transparent;transition:all .12s}
-    .sleep-btn:active{background:var(--border);transform:scale(.93)}
-    .sleep-val{width:56px;text-align:center;font-size:1.7rem;font-weight:700;color:var(--text);border:none;background:transparent;font-family:var(--font);-moz-appearance:textfield}
-    .sleep-val::-webkit-inner-spin-button,.sleep-val::-webkit-outer-spin-button{-webkit-appearance:none}
+/* === DASHBOARD (home) === */
+.dash-greeting{font-size:1.1rem;font-weight:300;color:var(--tx2);margin-bottom:16px}
+.dash-greeting strong{color:var(--tx);font-weight:600}
 
-    /* Pills */
-    .pills{display:flex;flex-wrap:wrap;gap:6px}
-    .pill{flex:1 1 auto;min-width:0;padding:10px 10px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--surface);color:var(--text2);font-family:var(--font);font-size:.82rem;font-weight:500;cursor:pointer;text-align:center;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:all .12s}
-    .pill:active{transform:scale(.95)}
-    .pill.selected{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 8px rgba(90,122,107,.25)}
-    .field-error .pills{outline:2px solid var(--red);outline-offset:3px;border-radius:var(--rs)}
+/* State ring */
+.state-ring-wrap{display:flex;justify-content:center;margin-bottom:20px}
+.state-ring{position:relative;width:160px;height:160px}
+.state-ring svg{transform:rotate(-90deg)}
+.state-ring-bg{fill:none;stroke:var(--surf2);stroke-width:8}
+.state-ring-fg{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .8s cubic-bezier(.22,1,.36,1),stroke .4s}
+.state-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.state-ring-icon{font-size:2rem;margin-bottom:4px}
+.state-ring-label{font-family:var(--fd);font-size:1.15rem}
+.state-ring-score{font-size:.72rem;color:var(--tx3);margin-top:2px}
 
-    /* Buttons */
-    .btn{display:block;width:100%;padding:14px 20px;border:none;border-radius:var(--r);font-family:var(--font);font-size:.95rem;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .12s}
-    .btn:active{transform:scale(.98)}
-    .btn-primary{background:var(--accent);color:#fff;box-shadow:var(--shadow);margin-top:6px}
-    .btn-primary:active{background:var(--accent-d)}
-    .btn-secondary{background:var(--bg);color:var(--text);border:1px solid var(--border)}
-    .btn-ghost{background:transparent;color:var(--text2)}
-    .btn-danger{background:var(--red-bg);color:var(--red)}
-    .btn-sm{display:inline-block;padding:5px 11px;font-size:.75rem;font-weight:600;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);color:var(--text2);cursor:pointer;font-family:var(--font);-webkit-tap-highlight-color:transparent}
+/* Quick stats */
+.quick-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.q-stat{background:var(--surf);border:1px solid var(--brd);border-radius:var(--rs);padding:12px;text-align:center}
+.q-stat-val{font-size:1.1rem;font-weight:700;margin-bottom:2px}
+.q-stat-label{font-size:.65rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em}
 
-    /* Summary strip */
-    .summary-strip{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:var(--surface);border-radius:var(--r);margin-bottom:12px;box-shadow:var(--shadow)}
-    .streak{font-size:.78rem;color:var(--text2);font-weight:500}
-    .week-dots{display:flex;gap:5px;direction:ltr}
-    .week-dot{width:10px;height:10px;border-radius:50%;background:var(--border);transition:background .2s}
-    .week-dot.green{background:var(--green)}.week-dot.yellow{background:var(--yellow)}.week-dot.orange{background:var(--orange)}.week-dot.red{background:var(--red)}
+/* Week chart */
+.week-section{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:16px;margin-bottom:16px}
+.week-section-title{font-size:.72rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.week-bars{display:flex;align-items:flex-end;gap:8px;height:64px;direction:ltr}
+.w-bar{flex:1;border-radius:6px 6px 3px 3px;transition:height .5s cubic-bezier(.22,1,.36,1);position:relative;min-height:4px}
+.w-bar.grn{background:linear-gradient(to top,var(--grn),rgba(124,196,160,.5))}.w-bar.ylw{background:linear-gradient(to top,var(--ylw),rgba(217,188,90,.5))}.w-bar.orn{background:linear-gradient(to top,var(--orn),rgba(217,142,90,.5))}.w-bar.red{background:linear-gradient(to top,var(--red),rgba(217,96,112,.5))}
+.w-bar.empty{background:var(--brd)}
+.w-bar-day{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:.58rem;color:var(--tx3)}
+.week-bars-wrap{padding-bottom:22px}
 
-    /* Result card */
-    .result-card{background:var(--surface);border-radius:var(--r);padding:24px 20px;margin-bottom:14px;box-shadow:var(--shadow-up);text-align:center;animation:slideUp .3s ease}
-    .result-card.hidden{display:none}
-    @keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-    .result-badge{width:52px;height:52px;border-radius:50%;margin:0 auto 12px;display:grid;place-items:center;font-size:1.4rem;font-weight:700}
-    .result-badge.green{background:var(--green-bg);color:var(--green)}
-    .result-badge.yellow{background:var(--yellow-bg);color:var(--yellow)}
-    .result-badge.orange{background:var(--orange-bg);color:var(--orange)}
-    .result-badge.red{background:var(--red-bg);color:var(--red)}
-    .result-title{font-size:1.15rem;font-weight:700;margin-bottom:4px}
-    .result-desc{font-size:.88rem;color:var(--text2);margin-bottom:16px;line-height:1.55}
-    .result-actions{text-align:right;margin-bottom:14px}
-    .result-actions ul{list-style:none;padding:0}
-    .result-actions li{padding:8px 12px;background:var(--bg);border-radius:var(--rs);margin-bottom:5px;font-size:.84rem;line-height:1.5}
-    .result-actions li::before{content:'→ ';color:var(--text2)}
-    .result-extra{margin-top:8px;padding:10px 12px;border-radius:var(--rs);font-size:.84rem;line-height:1.5;text-align:right}
-    .result-meta{display:flex;justify-content:space-between;font-size:.73rem;color:var(--text2);padding-top:12px;border-top:1px solid var(--border);margin-bottom:12px}
+/* Action card */
+.action-card{background:linear-gradient(135deg,var(--ac) 0%,var(--ac2) 100%);border-radius:var(--r);padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s;box-shadow:0 4px 24px rgba(124,196,160,.2)}
+.action-card:active{transform:scale(.97)}
+.action-card-text{color:var(--bg);font-size:.88rem;font-weight:600}
+.action-card-sub{color:rgba(17,16,21,.5);font-size:.75rem;font-weight:400;margin-top:2px}
+.action-card-arrow{color:var(--bg);font-size:1.2rem;opacity:.7}
 
-    /* History */
-    .history-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-    .history-btns{display:flex;gap:6px}
-    .page-title{font-size:1.05rem;font-weight:700}
-    .history-list{display:flex;flex-direction:column;gap:8px}
-    .history-item{background:var(--surface);border-radius:var(--r);padding:13px 16px;box-shadow:var(--shadow);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .1s}
-    .history-item:active{background:var(--bg)}
-    .history-row{display:flex;align-items:center;justify-content:space-between}
-    .history-date{font-size:.84rem;font-weight:600}
-    .badge{font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.03em}
-    .badge.green{background:var(--green-bg);color:var(--green)}
-    .badge.yellow{background:var(--yellow-bg);color:var(--yellow)}
-    .badge.orange{background:var(--orange-bg);color:var(--orange)}
-    .badge.red{background:var(--red-bg);color:var(--red)}
-    .history-sub{display:flex;gap:14px;margin-top:5px;font-size:.76rem;color:var(--text2)}
-    .history-detail{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:.78rem;color:var(--text2);line-height:1.7}
-    .history-detail.open{display:block}
-    .empty{text-align:center;color:var(--text2);font-size:.88rem;padding:40px 20px}
+/* Missed banner */
+.missed-banner{background:var(--ylw-b);border:1px solid rgba(217,188,90,.15);border-radius:var(--r);padding:14px 16px;margin-bottom:16px;font-size:.82rem;color:var(--ylw);display:none;animation:screenIn .3s ease}.missed-banner.show{display:flex;align-items:center;gap:10px}
+.missed-icon{font-size:1.3rem}
 
-    /* Meds */
-    .meds-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
-    .med-card{background:var(--surface);border-radius:var(--r);padding:13px 16px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between}
-    .med-info{flex:1;cursor:pointer}.med-name{font-size:.92rem;font-weight:600}.med-dose{font-size:.8rem;color:var(--text2)}.med-note{font-size:.76rem;color:var(--text2);font-style:italic}
-    .med-btns{display:flex;gap:8px;align-items:center}
-    .toggle{width:42px;height:24px;border-radius:12px;border:none;background:var(--border);position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .2s}
-    .toggle.on{background:var(--green)}
-    .toggle::after{content:'';position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.15);transition:transform .2s}
-    .toggle.on::after{transform:translateX(-18px)}
-    .del-btn{width:30px;height:30px;border:none;background:var(--red-bg);color:var(--red);border-radius:50%;font-size:1rem;cursor:pointer;display:grid;place-items:center;-webkit-tap-highlight-color:transparent}
-    .med-off .med-name,.med-off .med-dose{opacity:.35;text-decoration:line-through}
+/* === CHECK SCREEN === */
+.check-progress{display:flex;gap:4px;padding:0 0 16px}
+.check-dot{flex:1;height:3px;border-radius:2px;background:var(--brd);transition:background .3s}
+.check-dot.done{background:var(--ac)}
+.check-dot.current{background:var(--ac);animation:dotPulse 1s infinite}
+@keyframes dotPulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-    /* Modal */
-    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.32);display:flex;align-items:flex-end;justify-content:center;z-index:200;animation:fadeUp .15s ease}
-    .overlay.hidden{display:none}
-    .modal{background:var(--surface);width:100%;max-width:440px;border-radius:var(--r) var(--r) 0 0;padding:22px 20px calc(var(--sab) + 20px);animation:slideUp .25s ease}
-    .modal-title{font-size:1.05rem;font-weight:700;margin-bottom:14px}
-    .modal-btns{display:flex;gap:8px;margin-top:14px}.modal-btns .btn{flex:1}
+.card{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:20px 18px;margin-bottom:12px;animation:cardIn .35s cubic-bezier(.22,1,.36,1) both}
+@keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.card:nth-child(2){animation-delay:.05s}.card:nth-child(3){animation-delay:.1s}.card:nth-child(4){animation-delay:.15s}.card:nth-child(5){animation-delay:.2s}
+.card-label{font-size:.68rem;font-weight:700;color:var(--ac);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.card-label-icon{font-size:.85rem}
 
-    /* Settings */
-    .input{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:var(--rs);font-family:var(--font);font-size:.88rem;color:var(--text);background:var(--surface);transition:border-color .12s}
-    .input:focus{outline:none;border-color:var(--accent)}
-    .textarea{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:var(--rs);font-family:var(--font);font-size:.88rem;color:var(--text);background:var(--surface);resize:vertical;line-height:1.5}
-    .textarea:focus{outline:none;border-color:var(--accent)}
-    .placeholder-note{display:flex;align-items:center;gap:8px;padding:12px 14px;background:var(--bg);border-radius:var(--rs);font-size:.83rem;color:var(--text2)}
-    .storage-info{font-size:.8rem;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.field{margin-bottom:18px}.field:last-child{margin-bottom:0}
+.field-label{display:block;font-size:.84rem;font-weight:500;margin-bottom:10px;line-height:1.45}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{flex:1 1 auto;min-width:0;padding:11px 8px;border:1.5px solid var(--brd);border-radius:var(--rs);background:var(--bg2);color:var(--tx2);font-family:var(--font);font-size:.78rem;font-weight:500;cursor:pointer;text-align:center;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:all .2s}
+.pill:active{transform:scale(.94)}
+.pill.selected{background:var(--ac);color:var(--bg);border-color:var(--ac);font-weight:600;box-shadow:0 0 20px var(--ac-g)}
+.field-error .pills{outline:2px solid var(--red);outline-offset:3px;border-radius:var(--rs)}
+.sleep-input{display:flex;align-items:center;justify-content:center;gap:20px}
+.sleep-btn{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--brd);background:var(--bg2);font-size:1.2rem;color:var(--tx);cursor:pointer;display:grid;place-items:center;font-family:var(--font);-webkit-tap-highlight-color:transparent;transition:all .15s}
+.sleep-btn:active{background:var(--surf2);transform:scale(.9);border-color:var(--ac)}
+.sleep-val{width:56px;text-align:center;font-family:var(--fd);font-size:2.2rem;font-weight:400;color:var(--tx);border:none;background:transparent;-moz-appearance:textfield}
+.sleep-val::-webkit-inner-spin-button,.sleep-val::-webkit-outer-spin-button{-webkit-appearance:none}
 
-    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-    .shake{animation:shake .3s ease}
-    .hidden{display:none!important}
-    @supports(padding-bottom:env(safe-area-inset-bottom)){.tab-content{padding-bottom:calc(env(safe-area-inset-bottom) + 100px)}}
-    @media screen and (max-width:768px){input[type="text"],input[type="tel"],input[type="number"],textarea,select{font-size:16px}}
-  </style>
+.btn{display:block;width:100%;padding:15px 20px;border:none;border-radius:var(--r);font-family:var(--font);font-size:.9rem;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .2s}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:linear-gradient(135deg,var(--ac),var(--ac2));color:var(--bg);box-shadow:0 4px 20px var(--ac-g)}
+.btn-secondary{background:var(--surf);color:var(--tx);border:1px solid var(--brd)}
+.btn-ghost{background:transparent;color:var(--tx2)}
+.btn-danger{background:var(--red-b);color:var(--red);border:1px solid rgba(217,96,112,.15)}
+.btn-muted{background:var(--surf);color:var(--tx2);border:1px solid var(--brd);font-size:.82rem}
+.btn-sm{display:inline-block;padding:6px 12px;font-size:.72rem;font-weight:600;border:1px solid var(--brd);border-radius:var(--rs);background:var(--surf);color:var(--tx2);cursor:pointer;font-family:var(--font)}
+
+/* === RESULT SCREEN === */
+.result-screen{padding:0 20px 20px}
+.result-hero{text-align:center;padding:24px 0 20px;animation:heroIn .5s cubic-bezier(.22,1,.36,1)}
+@keyframes heroIn{from{opacity:0;transform:scale(.9) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.result-hero-badge{width:80px;height:80px;border-radius:50%;margin:0 auto 16px;display:grid;place-items:center;font-size:2rem;position:relative}
+.result-hero-badge::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid;opacity:.2;animation:ringPulse 2.5s infinite}
+@keyframes ringPulse{0%,100%{transform:scale(1);opacity:.2}50%{transform:scale(1.1);opacity:.05}}
+.result-hero-badge.green{background:var(--grn-b);color:var(--grn)}.result-hero-badge.green::after{border-color:var(--grn)}
+.result-hero-badge.yellow{background:var(--ylw-b);color:var(--ylw)}.result-hero-badge.yellow::after{border-color:var(--ylw)}
+.result-hero-badge.orange{background:var(--orn-b);color:var(--orn)}.result-hero-badge.orange::after{border-color:var(--orn)}
+.result-hero-badge.red{background:var(--red-b);color:var(--red)}.result-hero-badge.red::after{border-color:var(--red);animation-duration:1.5s}
+.result-hero h2{font-family:var(--fd);font-size:1.5rem;font-weight:400;margin-bottom:6px}
+.result-hero p{font-size:.86rem;color:var(--tx2);line-height:1.6}
+
+.meta-warn{background:var(--orn-b);border:1px solid rgba(217,142,90,.15);border-radius:var(--r);padding:16px;margin-bottom:12px;font-size:.84rem;line-height:1.6;text-align:center;color:var(--orn);font-weight:500;display:none}.meta-warn.show{display:block;animation:screenIn .3s ease}
+.esc-banner{border-radius:var(--r);padding:16px;margin-bottom:12px;font-size:.84rem;line-height:1.6;text-align:center;font-weight:600;display:none;border:1px solid}.esc-banner.show{display:block;animation:screenIn .3s ease}
+.esc-banner.orn-e{background:var(--orn-b);color:var(--orn);border-color:rgba(217,142,90,.2)}.esc-banner.red-e{background:var(--red-b);color:var(--red);border-color:rgba(217,96,112,.2)}
+.early-alert{border-radius:var(--r);padding:14px 16px;margin-bottom:12px;font-size:.8rem;line-height:1.65;display:none;border:1px solid}.early-alert.show{display:block;animation:screenIn .3s ease}.early-alert strong{display:block;margin-bottom:4px;font-size:.84rem}
+.r-actions{margin-bottom:14px}.r-actions ul{list-style:none;padding:0}
+.r-actions li{padding:12px 14px;background:var(--bg2);border:1px solid var(--brd);border-radius:var(--rs);margin-bottom:6px;font-size:.82rem;line-height:1.5;display:flex;align-items:flex-start;gap:8px}
+.r-actions li::before{content:'→';color:var(--tx3);flex-shrink:0}
+.r-extra{margin-top:8px;padding:12px 14px;border-radius:var(--rs);font-size:.82rem;line-height:1.5;border:1px solid}
+.contact-btns{display:flex;gap:8px;margin:12px 0}.contact-btns a{flex:1;padding:13px;border-radius:var(--rs);font-family:var(--font);font-size:.82rem;font-weight:600;text-align:center;text-decoration:none;border:none;transition:transform .15s}.contact-btns a:active{transform:scale(.96)}
+.c-call{background:linear-gradient(135deg,var(--ac),var(--ac2));color:var(--bg)}.c-sms{background:var(--grn-b);color:var(--grn);border:1px solid rgba(124,196,160,.15)}
+.delay-box{background:var(--ylw-b);border:1px solid rgba(217,188,90,.15);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;font-size:.82rem;color:var(--ylw);display:none}.delay-box.show{display:block}.delay-box p{margin-bottom:10px}
+.r-meta{display:flex;justify-content:space-between;font-size:.7rem;color:var(--tx3);padding:12px 0;border-top:1px solid var(--brd);margin:14px 0}
+
+/* === HARD STOP === */
+.hard-stop{position:fixed;inset:0;background:rgba(11,10,15,.94);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);display:flex;align-items:center;justify-content:center;z-index:300;padding:24px;animation:fadeIn .3s}.hard-stop.hidden{display:none}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.hs-box{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:40px 28px;max-width:360px;width:100%;text-align:center;animation:heroIn .5s cubic-bezier(.22,1,.36,1)}
+.hs-box .hs-i{font-size:3rem;margin-bottom:16px}.hs-box h2{font-family:var(--fd);font-size:1.3rem;margin-bottom:10px}.hs-box p{font-size:.86rem;color:var(--tx2);line-height:1.6;margin-bottom:24px}
+.hs-btns{display:flex;flex-direction:column;gap:8px}.hs-btns .btn{margin:0}
+
+/* === HISTORY === */
+.hist-list{display:flex;flex-direction:column;gap:8px}
+.hist-item{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:14px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.hist-item:active{transform:scale(.98);background:var(--surf2)}
+.hist-row{display:flex;align-items:center;justify-content:space-between}
+.hist-date{font-size:.82rem;font-weight:600}
+.badge{font-size:.65rem;font-weight:700;padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em}
+.badge.green{background:var(--grn-b);color:var(--grn)}.badge.yellow{background:var(--ylw-b);color:var(--ylw)}.badge.orange{background:var(--orn-b);color:var(--orn)}.badge.red{background:var(--red-b);color:var(--red)}
+.hist-sub{display:flex;gap:12px;margin-top:6px;font-size:.72rem;color:var(--tx3)}
+.hist-det{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--brd);font-size:.74rem;color:var(--tx2);line-height:1.75}.hist-det.open{display:block;animation:screenIn .2s ease}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-title{font-family:var(--fd);font-size:1.15rem}
+.empty{text-align:center;color:var(--tx3);font-size:.84rem;padding:48px 20px}
+
+/* === MEDS === */
+.meds-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.med-card{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;transition:transform .15s}
+.med-card:active{transform:scale(.98)}
+.med-info{flex:1;cursor:pointer}.med-nm{font-size:.88rem;font-weight:600}.med-ds{font-size:.76rem;color:var(--tx2)}.med-nt{font-size:.72rem;color:var(--tx3);font-style:italic}
+.med-btns{display:flex;gap:8px;align-items:center}
+.tog{width:44px;height:26px;border-radius:13px;border:none;background:var(--brd);position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .25s}
+.tog.on{background:var(--grn)}
+.tog::after{content:'';position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:var(--tx);box-shadow:0 1px 4px rgba(0,0,0,.3);transition:transform .25s}.tog.on::after{transform:translateX(-18px)}
+.del{width:30px;height:30px;border:none;background:var(--red-b);color:var(--red);border-radius:50%;font-size:.95rem;cursor:pointer;display:grid;place-items:center}
+.med-off .med-nm,.med-off .med-ds{opacity:.3;text-decoration:line-through}
+.overlay{position:fixed;inset:0;background:rgba(11,10,15,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:flex-end;justify-content:center;z-index:250}.overlay.hidden{display:none}
+.modal{background:var(--surf);border-top:1px solid var(--brd);width:100%;max-width:440px;border-radius:var(--r) var(--r) 0 0;padding:24px 22px calc(var(--sab) + 22px);animation:slideUp .3s cubic-bezier(.22,1,.36,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-title{font-family:var(--fd);font-size:1.05rem;margin-bottom:14px}.modal-btns{display:flex;gap:8px;margin-top:14px}.modal-btns .btn{flex:1}
+.input{width:100%;padding:12px 14px;border:1.5px solid var(--brd);border-radius:var(--rs);font-family:var(--font);font-size:.84rem;color:var(--tx);background:var(--bg2);transition:all .2s}.input:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-g)}
+.textarea{width:100%;padding:12px 14px;border:1.5px solid var(--brd);border-radius:var(--rs);font-family:var(--font);font-size:.84rem;color:var(--tx);background:var(--bg2);resize:vertical;line-height:1.5}.textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-g)}
+.ph-note{display:flex;align-items:center;gap:8px;padding:12px 14px;background:var(--bg2);border:1px solid var(--brd);border-radius:var(--rs);font-size:.8rem;color:var(--tx3)}
+.stor-info{font-size:.76rem;color:var(--tx3);margin-bottom:12px;line-height:1.5}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;background:var(--bg2);border:1px solid var(--brd);border-radius:20px;font-size:.74rem;color:var(--tx)}
+.tag-x{background:none;border:none;color:var(--red);font-size:.85rem;cursor:pointer;padding:0 2px}
+.add-row{display:flex;gap:6px;margin-top:8px}.add-row .input{flex:1}.add-row button{padding:10px 16px;border:none;background:var(--ac);color:var(--bg);border-radius:var(--rs);font-family:var(--font);font-size:.82rem;font-weight:600;cursor:pointer}
+
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}.shake{animation:shake .3s}
+.hidden{display:none!important}
+@media screen and (max-width:768px){input[type="text"],input[type="tel"],input[type="number"],textarea,select{font-size:16px}}
+</style>
 </head>
 <body>
-  <div id="app">
-    <header class="top-bar">
-      <h1 class="app-title">Clarity Check</h1>
-      <button class="icon-btn" id="settingsToggle" aria-label="הגדרות">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      </button>
-    </header>
+<div id="app">
+  <!-- Status bar -->
+  <div class="status-bar"><span id="clock"></span><div class="status-bar-right"><span id="storageLabel">local</span><div class="status-dot"></div></div></div>
 
-    <nav class="tab-bar" role="tablist">
-      <button class="tab active" data-tab="check" role="tab" aria-selected="true">בדיקה</button>
-      <button class="tab" data-tab="history" role="tab" aria-selected="false">היסטוריה</button>
-      <button class="tab" data-tab="meds" role="tab" aria-selected="false">תרופות</button>
-    </nav>
+  <!-- App header -->
+  <div class="app-header">
+    <div class="app-header-left"><h1>Clarity</h1><p id="headerDate"></p></div>
+    <div class="header-avatar" id="avatarBtn">⚙</div>
+  </div>
 
-    <!-- CHECK -->
-    <main class="tab-content active" id="tab-check">
-      <div id="resultCard" class="result-card hidden">
-        <div class="result-badge" id="resultBadge"></div>
-        <h2 class="result-title" id="resultTitle"></h2>
-        <p class="result-desc" id="resultDesc"></p>
-        <div class="result-actions" id="resultActions"></div>
-        <div class="result-meta"><span id="resultScore"></span><span id="resultDate"></span></div>
-        <button class="btn btn-secondary" id="updateTodayBtn">עדכן בדיקה של היום</button>
+  <!-- Hard stop -->
+  <div class="hard-stop hidden" id="hs"><div class="hs-box"><div class="hs-i" id="hsI">⏸</div><h2 id="hsT">עצור רגע.</h2><p id="hsP"></p><div class="hs-btns"><button class="btn btn-primary" id="hsF">פעל לפי הכללים שלך</button><button class="btn btn-muted" id="hsC">המשך בכל זאת</button></div></div></div>
+
+  <!-- SCREEN: Home / Dashboard -->
+  <div class="screen active" id="s-home">
+    <div class="missed-banner" id="missedB"><span class="missed-icon">⚡</span><span id="missedTxt"></span></div>
+
+    <!-- Result hero (if today filled) -->
+    <div id="resultHero" class="hidden">
+      <div class="result-hero">
+        <div class="result-hero-badge" id="rhBadge"></div>
+        <h2 id="rhTitle"></h2>
+        <p id="rhDesc"></p>
       </div>
-
-      <div class="summary-strip" id="summaryStrip">
-        <div class="streak" id="streakDisplay"></div>
-        <div class="week-dots" id="weekDots"></div>
-      </div>
-
-      <form id="checkForm" class="check-form" autocomplete="off">
-        <section class="card">
-          <h3 class="card-label">שינה</h3>
-          <div class="field">
-            <label class="field-label" for="sleepHours">שעות שינה אמש</label>
-            <div class="sleep-input">
-              <button type="button" class="sleep-btn" data-delta="-0.5" aria-label="פחות">−</button>
-              <input type="number" id="sleepHours" class="sleep-val" min="0" max="12" step="0.5" value="7" inputmode="decimal">
-              <button type="button" class="sleep-btn" data-delta="0.5" aria-label="יותר">+</button>
-            </div>
-          </div>
-          <div class="field">
-            <label class="field-label">מרגיש עייף?</label>
-            <div class="pills" data-field="tired">
-              <button type="button" class="pill" data-value="yes">כן</button>
-              <button type="button" class="pill" data-value="no">לא</button>
-            </div>
-          </div>
-        </section>
-
-        <section class="card">
-          <h3 class="card-label">חשיבה</h3>
-          <div class="field">
-            <label class="field-label">כמה מהירות המחשבות היום?</label>
-            <div class="pills" data-field="thoughtSpeed">
-              <button type="button" class="pill" data-value="slower">איטי מהרגיל</button>
-              <button type="button" class="pill" data-value="normal">רגיל</button>
-              <button type="button" class="pill" data-value="faster">מהיר מהרגיל</button>
-              <button type="button" class="pill" data-value="much_faster">מהיר מאוד</button>
-            </div>
-          </div>
-          <div class="field">
-            <label class="field-label">כמה בטוחים מרגישים הרעיונות שלך?</label>
-            <div class="pills" data-field="certainty">
-              <button type="button" class="pill" data-value="normal">רגיל</button>
-              <button type="button" class="pill" data-value="more_certain">בטוח מהרגיל</button>
-              <button type="button" class="pill" data-value="extremely_certain">בטוח לגמרי</button>
-            </div>
-          </div>
-          <div class="field">
-            <label class="field-label">מרגיש שהבנת משהו חשוב במיוחד?</label>
-            <div class="pills" data-field="figuredOut">
-              <button type="button" class="pill" data-value="no">לא</button>
-              <button type="button" class="pill" data-value="maybe">אולי קצת</button>
-              <button type="button" class="pill" data-value="yes">כן</button>
-            </div>
-          </div>
-        </section>
-
-        <section class="card">
-          <h3 class="card-label">התנהגות</h3>
-          <div class="field">
-            <label class="field-label">כמה חזק הדחף לפעול מהר?</label>
-            <div class="pills" data-field="urgeToAct">
-              <button type="button" class="pill" data-value="low">נמוך</button>
-              <button type="button" class="pill" data-value="normal">רגיל</button>
-              <button type="button" class="pill" data-value="high">גבוה</button>
-              <button type="button" class="pill" data-value="very_high">גבוה מאוד</button>
-            </div>
-          </div>
-          <div class="field">
-            <label class="field-label">קיבלת או רצית לקבל החלטות מהירות?</label>
-            <div class="pills" data-field="fastDecisions">
-              <button type="button" class="pill" data-value="no">לא</button>
-              <button type="button" class="pill" data-value="a_little">קצת</button>
-              <button type="button" class="pill" data-value="yes">כן</button>
-            </div>
-          </div>
-          <div class="field">
-            <label class="field-label">חסר מנוחה / מופעל מהרגיל?</label>
-            <div class="pills" data-field="restless">
-              <button type="button" class="pill" data-value="no">לא</button>
-              <button type="button" class="pill" data-value="a_little">קצת</button>
-              <button type="button" class="pill" data-value="yes">כן</button>
-            </div>
-          </div>
-        </section>
-
-        <section class="card">
-          <h3 class="card-label">תרופות</h3>
-          <div class="field">
-            <label class="field-label">לקחת תרופות היום?</label>
-            <div class="pills" data-field="medication">
-              <button type="button" class="pill" data-value="yes">כן</button>
-              <button type="button" class="pill" data-value="delayed">באיחור</button>
-              <button type="button" class="pill" data-value="no">לא</button>
-              <button type="button" class="pill" data-value="na">לא רלוונטי</button>
-            </div>
-          </div>
-        </section>
-
-        <button type="submit" class="btn btn-primary" id="submitBtn">שמור בדיקה</button>
-      </form>
-    </main>
-
-    <!-- HISTORY -->
-    <div class="tab-content" id="tab-history">
-      <div class="history-top">
-        <h2 class="page-title">7 ימים אחרונים</h2>
-        <div class="history-btns">
-          <button class="btn-sm" id="exportBtn">ייצוא</button>
-          <label class="btn-sm">ייבוא<input type="file" id="importInput" accept=".json" hidden></label>
-        </div>
-      </div>
-      <div id="historyList" class="history-list"></div>
-      <p class="empty" id="historyEmpty">אין רשומות עדיין.</p>
+      <div class="meta-warn" id="mWarn">דברים עשויים להרגיש מאוד ברורים עכשיו.<br>זה לא אומר שהם כאלה.</div>
+      <div class="esc-banner" id="escB"></div>
+      <div class="early-alert" id="eAlert"></div>
+      <div class="r-actions" id="rAct"></div>
+      <div class="contact-btns" id="cBtns" style="display:none"></div>
+      <div class="delay-box" id="dBox"><p>דחה החלטות חשובות 24–48 שעות.</p><button class="btn btn-secondary" id="dBtn">⏰ תזכורת ל-24 שעות</button></div>
+      <div class="r-meta"><span id="rSc"></span><span id="rDt"></span></div>
+      <button class="btn btn-secondary" id="editBtn" style="margin-bottom:16px">✏️ עדכן בדיקה של היום</button>
     </div>
 
-    <!-- MEDS -->
-    <div class="tab-content" id="tab-meds">
-      <h2 class="page-title">רשימת תרופות</h2>
-      <div id="medsList" class="meds-list"></div>
-      <p class="empty" id="medsEmpty">לא נוספו תרופות.</p>
-      <button class="btn btn-secondary" id="addMedBtn">+ הוסף תרופה</button>
-      <div class="overlay hidden" id="medModal">
-        <div class="modal">
-          <h3 class="modal-title" id="medModalTitle">הוסף תרופה</h3>
-          <div class="field"><label class="field-label" for="medName">שם</label><input type="text" id="medName" class="input" placeholder="למשל: Lamotrigine"></div>
-          <div class="field"><label class="field-label" for="medDosage">מינון</label><input type="text" id="medDosage" class="input" placeholder="למשל: 200mg"></div>
-          <div class="field"><label class="field-label" for="medNote">הערה</label><input type="text" id="medNote" class="input" placeholder="למשל: ערב"></div>
-          <div class="modal-btns">
-            <button class="btn btn-primary" id="saveMedBtn">שמור</button>
-            <button class="btn btn-ghost" id="cancelMedBtn">ביטול</button>
-          </div>
-        </div>
+    <!-- Dashboard (no result yet OR always shown) -->
+    <div id="dashSection">
+      <div class="state-ring-wrap" id="ringWrap" style="display:none">
+        <div class="state-ring"><svg viewBox="0 0 160 160" width="160" height="160"><circle class="state-ring-bg" cx="80" cy="80" r="70"/><circle class="state-ring-fg" id="ringFg" cx="80" cy="80" r="70" stroke-dasharray="440" stroke-dashoffset="440"/></svg><div class="state-ring-center"><div class="state-ring-icon" id="ringIcon"></div><div class="state-ring-label" id="ringLabel"></div><div class="state-ring-score" id="ringSc"></div></div></div>
       </div>
-    </div>
 
-    <!-- SETTINGS -->
-    <div class="tab-content" id="tab-settings">
-      <h2 class="page-title">הגדרות</h2>
-      <section class="card">
-        <h3 class="card-label">כללי בטיחות אישיים</h3>
-        <textarea id="safetyRules" class="textarea" rows="3" placeholder="למשל: אם אני בכתום, לא החלטות כספיות 48 שעות"></textarea>
-      </section>
-      <section class="card">
-        <h3 class="card-label">איש קשר מהימן</h3>
-        <div class="field"><label class="field-label" for="contactName">שם</label><input type="text" id="contactName" class="input"></div>
-        <div class="field"><label class="field-label" for="contactPhone">טלפון</label><input type="tel" id="contactPhone" class="input"></div>
-      </section>
-      <section class="card">
-        <div class="placeholder-note"><span>🔒</span> שיתוף עם איש קשר — עדיין לא זמין</div>
-      </section>
-      <section class="card">
-        <h3 class="card-label">אחסון</h3>
-        <p class="storage-info" id="storageStatus"></p>
-        <button class="btn btn-danger" id="resetDataBtn">מחק את כל הנתונים</button>
-      </section>
-      <button class="btn btn-ghost" id="settingsBack">← חזור</button>
+      <div class="quick-stats" id="qStats" style="display:none">
+        <div class="q-stat"><div class="q-stat-val" id="qSleep">—</div><div class="q-stat-label">שינה</div></div>
+        <div class="q-stat"><div class="q-stat-val" id="qStreak">0</div><div class="q-stat-label">רצף</div></div>
+        <div class="q-stat"><div class="q-stat-val" id="qMed">—</div><div class="q-stat-label">תרופות</div></div>
+      </div>
+
+      <div class="week-section">
+        <div class="week-section-title">שבוע אחרון</div>
+        <div class="week-bars-wrap"><div class="week-bars" id="wBars"></div></div>
+      </div>
+
+      <div class="action-card" id="startCheck">
+        <div><div class="action-card-text" id="actionTxt">התחל בדיקה יומית</div><div class="action-card-sub">30–60 שניות</div></div>
+        <div class="action-card-arrow">←</div>
+      </div>
     </div>
   </div>
 
+  <!-- SCREEN: Check -->
+  <div class="screen" id="s-check">
+    <div class="section-header"><div class="section-title">בדיקה יומית</div><button class="btn-ghost" id="checkBack" style="font-size:.82rem;padding:6px 10px">✕</button></div>
+    <div class="check-progress" id="checkProg"></div>
+    <form id="checkForm" autocomplete="off">
+      <section class="card"><h3 class="card-label"><span class="card-label-icon">🌙</span> שינה</h3><div class="field"><label class="field-label">שעות שינה אמש</label><div class="sleep-input"><button type="button" class="sleep-btn" data-d="-0.5">−</button><input type="number" id="sleepH" class="sleep-val" min="0" max="12" step="0.5" value="7" inputmode="decimal"><button type="button" class="sleep-btn" data-d="0.5">+</button></div></div><div class="field"><label class="field-label">מרגיש עייף?</label><div class="pills" data-field="tired"><button type="button" class="pill" data-value="yes">כן</button><button type="button" class="pill" data-value="no">לא</button></div></div></section>
+      <section class="card"><h3 class="card-label"><span class="card-label-icon">🧠</span> חשיבה</h3><div class="field"><label class="field-label">מהירות מחשבות</label><div class="pills" data-field="thoughtSpeed"><button type="button" class="pill" data-value="slower">איטי</button><button type="button" class="pill" data-value="normal">רגיל</button><button type="button" class="pill" data-value="faster">מהיר</button><button type="button" class="pill" data-value="much_faster">מהיר מאוד</button></div></div><div class="field"><label class="field-label">ביטחון ברעיונות</label><div class="pills" data-field="certainty"><button type="button" class="pill" data-value="normal">רגיל</button><button type="button" class="pill" data-value="more_certain">בטוח מהרגיל</button><button type="button" class="pill" data-value="extremely_certain">בטוח לגמרי</button></div></div><div class="field"><label class="field-label">הבנת משהו חשוב במיוחד?</label><div class="pills" data-field="figuredOut"><button type="button" class="pill" data-value="no">לא</button><button type="button" class="pill" data-value="maybe">אולי</button><button type="button" class="pill" data-value="yes">כן</button></div></div><div class="field"><label class="field-label">לא צריך עצה מאף אחד?</label><div class="pills" data-field="noAdvice"><button type="button" class="pill" data-value="no">לא</button><button type="button" class="pill" data-value="maybe">אולי</button><button type="button" class="pill" data-value="yes">בדיוק</button></div></div></section>
+      <section class="card"><h3 class="card-label"><span class="card-label-icon">⚡</span> התנהגות</h3><div class="field"><label class="field-label">דחף לפעול מהר</label><div class="pills" data-field="urgeToAct"><button type="button" class="pill" data-value="low">נמוך</button><button type="button" class="pill" data-value="normal">רגיל</button><button type="button" class="pill" data-value="high">גבוה</button><button type="button" class="pill" data-value="very_high">גבוה מאוד</button></div></div><div class="field"><label class="field-label">החלטות מהירות?</label><div class="pills" data-field="fastDecisions"><button type="button" class="pill" data-value="no">לא</button><button type="button" class="pill" data-value="a_little">קצת</button><button type="button" class="pill" data-value="yes">כן</button></div></div><div class="field"><label class="field-label">חסר מנוחה?</label><div class="pills" data-field="restless"><button type="button" class="pill" data-value="no">לא</button><button type="button" class="pill" data-value="a_little">קצת</button><button type="button" class="pill" data-value="yes">כן</button></div></div></section>
+      <section class="card"><h3 class="card-label"><span class="card-label-icon">💊</span> תרופות</h3><div class="field"><label class="field-label">לקחת תרופות?</label><div class="pills" data-field="medication"><button type="button" class="pill" data-value="yes">כן</button><button type="button" class="pill" data-value="delayed">באיחור</button><button type="button" class="pill" data-value="no">לא</button><button type="button" class="pill" data-value="na">לא רלוונטי</button></div></div></section>
+      <button type="submit" class="btn btn-primary" id="submitBtn">שמור בדיקה</button>
+    </form>
+  </div>
+
+  <!-- SCREEN: History -->
+  <div class="screen" id="s-history">
+    <div class="section-header"><div class="section-title">היסטוריה</div><div class="history-btns"><button class="btn-sm" id="expBtn">ייצוא</button><label class="btn-sm">ייבוא<input type="file" id="impIn" accept=".json" hidden></label></div></div>
+    <div id="histList" class="hist-list"></div><p class="empty" id="histEmp">אין רשומות.</p>
+  </div>
+
+  <!-- SCREEN: Meds -->
+  <div class="screen" id="s-meds">
+    <div class="section-header"><div class="section-title">תרופות</div></div>
+    <div id="medsList" class="meds-list"></div><p class="empty" id="medsEmp">לא נוספו תרופות.</p>
+    <button class="btn btn-secondary" id="addMed">+ הוסף תרופה</button>
+    <div class="overlay hidden" id="medMod"><div class="modal"><h3 class="modal-title" id="mmT">הוסף תרופה</h3><div class="field"><label class="field-label">שם</label><input type="text" id="mN" class="input" placeholder="Lamotrigine"></div><div class="field"><label class="field-label">מינון</label><input type="text" id="mD" class="input" placeholder="200mg"></div><div class="field"><label class="field-label">הערה</label><input type="text" id="mNo" class="input" placeholder="ערב"></div><div class="modal-btns"><button class="btn btn-primary" id="saveMed">שמור</button><button class="btn btn-ghost" id="canMed">ביטול</button></div></div></div>
+  </div>
+
+  <!-- SCREEN: Settings -->
+  <div class="screen" id="s-settings">
+    <div class="section-header"><div class="section-title">הגדרות</div><button class="btn-ghost" id="setBack" style="font-size:.82rem;padding:6px 10px">✕</button></div>
+    <section class="card"><h3 class="card-label">כללי בטיחות</h3><textarea id="sR" class="textarea" rows="3" placeholder="למשל: בכתום — לא החלטות כספיות 48 שעות"></textarea></section>
+    <section class="card"><h3 class="card-label">הסימנים המוקדמים שלי</h3><p style="font-size:.78rem;color:var(--tx3);margin-bottom:8px">יוצגו כשיש סיכון.</p><div id="sigC" class="tags"></div><div class="add-row"><input type="text" id="nSig" class="input" placeholder="חשיבה מהירה"><button id="aSig">+</button></div></section>
+    <section class="card"><h3 class="card-label">איש קשר מהימן</h3><div class="field"><label class="field-label">שם</label><input type="text" id="cN" class="input"></div><div class="field"><label class="field-label">טלפון</label><input type="tel" id="cP" class="input"></div><div class="field"><label class="field-label">הודעה מוכנה</label><textarea id="smsT" class="textarea" rows="2" placeholder="היי, יכול להיות שאני קצת לא בכיוון. אפשר לדבר?"></textarea></div></section>
+    <section class="card"><div class="ph-note"><span>🔒</span> שיתוף אוטומטי — בקרוב</div></section>
+    <section class="card"><h3 class="card-label">אחסון</h3><p class="stor-info" id="stSt"></p><button class="btn btn-danger" id="rstBtn">מחק את כל הנתונים</button></section>
+  </div>
+</div>
+
+<!-- Bottom nav -->
+<nav class="bottom-nav"><div class="bottom-nav-inner">
+  <button class="nav-item active" data-s="home"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>בית</span></button>
+  <button class="nav-item" data-s="history"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>היסטוריה</span></button>
+  <button class="nav-item" data-s="meds"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 16.5h3"/></svg><span>תרופות</span></button>
+</div></nav>
+
 <script>
-// ============================================================
-// DB LAYER — IndexedDB primary, localStorage fallback
-// ============================================================
-const DB = (() => {
-  const DB_NAME = 'ClarityCheckDB';
-  const STORE = 'appdata';
-  const KEY = 'main';
-  const LS_KEY = 'claritycheck_data';
-  let _db = null, _useIDB = true;
+const DB=(()=>{const N='ClarityDB',S='d',K='m',L='cc_d';let _d=null,_o=true;
+function df(){return{entries:[],settings:{trustedContactName:'',trustedContactPhone:'',safetyRulesNote:'',smsTemplate:'היי, יכול להיות שאני קצת לא בכיוון. אפשר לדבר?',earlySigns:[]},medications:[]}}
+function op(){return new Promise((r,j)=>{if(_d)return r(_d);try{const q=indexedDB.open(N,1);q.onupgradeneeded=e=>{if(!e.target.result.objectStoreNames.contains(S))e.target.result.createObjectStore(S)};q.onsuccess=e=>{_d=e.target.result;r(_d)};q.onerror=()=>{_o=false;j()}}catch{_o=false;j()}})}
+function iG(){return op().then(db=>new Promise((r,j)=>{const q=db.transaction(S,'readonly').objectStore(S).get(K);q.onsuccess=()=>r(q.result||null);q.onerror=()=>j()}))}
+function iS(d){return op().then(db=>new Promise((r,j)=>{const q=db.transaction(S,'readwrite').objectStore(S).put(d,K);q.onsuccess=()=>r();q.onerror=()=>j()}))}
+function lG(){try{const r=localStorage.getItem(L);return r?JSON.parse(r):null}catch{return null}}
+function lS(d){try{localStorage.setItem(L,JSON.stringify(d))}catch{}}
+async function load(){let d=null;if(_o)try{d=await iG()}catch{_o=false};if(!d)d=lG();if(d&&_o)try{if(!await iG().catch(()=>null))await iS(d)}catch{};
+if(d){if(!d.settings)d.settings=df().settings;if(!d.settings.smsTemplate)d.settings.smsTemplate=df().settings.smsTemplate;if(!d.settings.earlySigns)d.settings.earlySigns=[]}return d||df()}
+async function save(d){lS(d);if(_o)try{await iS(d)}catch{}}
+async function clear(){localStorage.removeItem(L);if(_o)try{(await op()).transaction(S,'readwrite').objectStore(S).delete(K)}catch{}}
+return{load,save,clear,df}})();
 
-  function defaults() {
-    return { entries: [], settings: { trustedContactName: '', trustedContactPhone: '', safetyRulesNote: '' }, medications: [] };
-  }
-
-  function openDB() {
-    return new Promise((res, rej) => {
-      if (_db) return res(_db);
-      try {
-        const req = indexedDB.open(DB_NAME, 1);
-        req.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE); };
-        req.onsuccess = e => { _db = e.target.result; res(_db); };
-        req.onerror = () => { _useIDB = false; rej(req.error); };
-      } catch(e) { _useIDB = false; rej(e); }
-    });
-  }
-
-  function idbGet() {
-    return openDB().then(db => new Promise((res, rej) => {
-      const r = db.transaction(STORE, 'readonly').objectStore(STORE).get(KEY);
-      r.onsuccess = () => res(r.result || null);
-      r.onerror = () => rej(r.error);
-    }));
-  }
-
-  function idbSet(data) {
-    return openDB().then(db => new Promise((res, rej) => {
-      const r = db.transaction(STORE, 'readwrite').objectStore(STORE).put(data, KEY);
-      r.onsuccess = () => res();
-      r.onerror = () => rej(r.error);
-    }));
-  }
-
-  function lsGet() { try { const r = localStorage.getItem(LS_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; } }
-  function lsSet(d) { try { localStorage.setItem(LS_KEY, JSON.stringify(d)); } catch(e) {} }
-
-  async function load() {
-    let d = null;
-    if (_useIDB) { try { d = await idbGet(); } catch(e) { _useIDB = false; } }
-    if (!d) d = lsGet();
-    if (d && _useIDB) { try { const x = await idbGet().catch(() => null); if (!x) await idbSet(d); } catch(e) {} }
-    return d || defaults();
-  }
-
-  async function save(d) {
-    lsSet(d);
-    if (_useIDB) { try { await idbSet(d); } catch(e) {} }
-  }
-
-  async function clear() {
-    localStorage.removeItem(LS_KEY);
-    if (_useIDB) { try { const db = await openDB(); db.transaction(STORE, 'readwrite').objectStore(STORE).delete(KEY); } catch(e) {} }
-  }
-
-  return { load, save, clear, defaults };
-})();
-
-// ============================================================
-// APP
-// ============================================================
-(async () => {
-
-let data = await DB.load();
-
-// Constants
-const STATES = {
-  green:  { title:'יציב', desc:'אין שום דבר חריג היום.', icon:'✓' },
-  yellow: { title:'שינוי מוקדם', desc:'יש כמה שינויים שכדאי לשים לב אליהם היום.', icon:'⚠' },
-  orange: { title:'סיכון עולה', desc:'כמה סימנים מופיעים יחד. היום הוא לא יום טוב להחלטות גדולות.', icon:'▲' },
-  red:    { title:'רמת התראה גבוהה', desc:'יש צבר חזק של סימנים היום. האט קצב ופעל לפי השלבים שלך עכשיו.', icon:'●' }
-};
-const ACTIONS = {
-  green:['המשך כרגיל','שמור על שגרה יציבה','בדוק שוב מחר'],
-  yellow:['הימנע מהחלטות גדולות ב-24 השעות הקרובות','הפחת גירויים אם אפשר','תעדף שינה הלילה','הימנע מקפאין מיותר'],
-  orange:['לא לקבל החלטות כספיות או משנות חיים','דחה התחייבויות חדשות','פנה לאדם מהימן','שמור על ערב עם גירויים מינימליים','בדוק עקביות תרופות'],
-  red:['לא לקבל החלטות חשובות','צור קשר עם אדם מהימן עכשיו','שמור על שגרה פשוטה ושקטה','אם הדברים מרגישים מחוץ לשליטה, פנה למקור תמיכה מקצועי']
-};
-const SO = ['green','yellow','orange','red'];
-const FIELDS = ['tired','thoughtSpeed','certainty','figuredOut','urgeToAct','fastDecisions','restless','medication'];
-const HDAYS = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
-const SB = {green:'יציב',yellow:'שינוי',orange:'סיכון',red:'התראה'};
-const ML = {yes:'נלקחו',delayed:'באיחור',no:'לא נלקחו',na:'לא רלוונטי'};
-const TL = {slower:'איטי',normal:'רגיל',faster:'מהיר',much_faster:'מהיר מאוד'};
-const CL = {normal:'רגיל',more_certain:'בטוח מהרגיל',extremely_certain:'בטוח לגמרי'};
-
-const $ = s => document.querySelector(s);
-const $$ = s => document.querySelectorAll(s);
-const today = () => new Date().toISOString().slice(0,10);
+(async()=>{
+let D=await DB.load();
+const SI={green:{t:'יציב',d:'אין שום דבר חריג היום.',i:'✓'},yellow:{t:'שינוי מוקדם',d:'יש שינויים שכדאי לשים לב אליהם.',i:'⚠'},orange:{t:'סיכון עולה',d:'כמה סימנים מופיעים יחד. לא יום להחלטות.',i:'▲'},red:{t:'התראה גבוהה',d:'צבר חזק של סימנים. פעל לפי השלבים שלך.',i:'●'}};
+const AC={green:['המשך כרגיל','שמור שגרה','בדוק מחר'],yellow:['הימנע מהחלטות גדולות 24h','הפחת גירויים','תעדף שינה','הימנע מקפאין'],orange:['לא החלטות כספיות/משנות חיים','דחה התחייבויות','פנה לאדם מהימן','ערב שקט','בדוק תרופות'],red:['לא החלטות חשובות','צור קשר עם מהימן עכשיו','שגרה פשוטה','אם מחוץ לשליטה — תמיכה מקצועית']};
+const SO=['green','yellow','orange','red'],FL=['tired','thoughtSpeed','certainty','figuredOut','noAdvice','urgeToAct','fastDecisions','restless','medication'];
+const DY=['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'],DYL=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+const SBL={green:'יציב',yellow:'שינוי',orange:'סיכון',red:'התראה'},MLL={yes:'✓',delayed:'⏰',no:'✕',na:'—'},THL={slower:'איטי',normal:'רגיל',faster:'מהיר',much_faster:'מהיר מאוד'},CLL={normal:'רגיל',more_certain:'בטוח+',extremely_certain:'בטוח לגמרי'};
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s),td=()=>new Date().toISOString().slice(0,10);
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
-function fmtDate(ds){const d=new Date(ds+'T00:00:00'),t=new Date(),y=new Date(t);y.setDate(y.getDate()-1);if(ds===today())return'היום';if(ds===y.toISOString().slice(0,10))return'אתמול';return`יום ${HDAYS[d.getDay()]}, ${d.getDate()}/${d.getMonth()+1}`}
-async function save(){await DB.save(data)}
+function fmt(ds){const d=new Date(ds+'T00:00:00'),t=new Date(),y=new Date(t);y.setDate(y.getDate()-1);if(ds===td())return'היום';if(ds===y.toISOString().slice(0,10))return'אתמול';return`${DYL[d.getDay()]}, ${d.getDate()}/${d.getMonth()+1}`}
+async function sv(){await DB.save(D)}
+
+// Clock
+function updClock(){const n=new Date();$('#clock').textContent=n.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})}
+setInterval(updClock,10000);updClock();
+
+// Header date
+function updHeader(){const n=new Date();const opts={weekday:'long',day:'numeric',month:'long'};$('#headerDate').textContent=n.toLocaleDateString('he-IL',opts)}
+updHeader();
 
 // Scoring
-function score(e){
-  let s=0;const h=e.sleepHours;
-  if(h<5)s+=4;else if(h<6)s+=3;else if(h<7)s+=1;
-  if(h<6&&e.tired==='no')s+=2;
-  if(e.thoughtSpeed==='faster')s+=2;if(e.thoughtSpeed==='much_faster')s+=4;
-  if(e.certainty==='more_certain')s+=2;if(e.certainty==='extremely_certain')s+=4;
-  if(e.figuredOut==='maybe')s+=1;if(e.figuredOut==='yes')s+=3;
-  if(e.urgeToAct==='high')s+=2;if(e.urgeToAct==='very_high')s+=4;
-  if(e.fastDecisions==='a_little')s+=1;if(e.fastDecisions==='yes')s+=3;
-  if(e.restless==='a_little')s+=1;if(e.restless==='yes')s+=2;
-  if(e.medication==='delayed')s+=1;if(e.medication==='no')s+=3;
-  return s;
-}
-function s2state(s){if(s<=3)return'green';if(s<=7)return'yellow';if(s<=11)return'orange';return'red'}
-function bump(c,m){return SO.indexOf(m)>SO.indexOf(c)?m:c}
-function getPrev(ds,off){const d=new Date(ds+'T00:00:00');d.setDate(d.getDate()-off);return data.entries.find(e=>e.date===d.toISOString().slice(0,10))||null}
+function sc(e){let s=0;const h=e.sleepHours;if(h<5)s+=4;else if(h<6)s+=3;else if(h<7)s+=1;if(h<6&&e.tired==='no')s+=2;if(e.thoughtSpeed==='faster')s+=2;if(e.thoughtSpeed==='much_faster')s+=4;if(e.certainty==='more_certain')s+=2;if(e.certainty==='extremely_certain')s+=4;if(e.figuredOut==='maybe')s+=1;if(e.figuredOut==='yes')s+=3;if(e.urgeToAct==='high')s+=2;if(e.urgeToAct==='very_high')s+=4;if(e.fastDecisions==='a_little')s+=1;if(e.fastDecisions==='yes')s+=3;if(e.restless==='a_little')s+=1;if(e.restless==='yes')s+=2;if(e.medication==='delayed')s+=1;if(e.medication==='no')s+=3;if(e.noAdvice==='yes'&&(e.certainty==='more_certain'||e.certainty==='extremely_certain'))s+=3;else if(e.noAdvice==='yes')s+=1;else if(e.noAdvice==='maybe')s+=1;return s}
+function s2s(s){if(s<=3)return'green';if(s<=7)return'yellow';if(s<=11)return'orange';return'red'}
+function bmp(c,m){return SO.indexOf(m)>SO.indexOf(c)?m:c}
+function gp(ds,o){const d=new Date(ds+'T00:00:00');d.setDate(d.getDate()-o);return D.entries.find(e=>e.date===d.toISOString().slice(0,10))||null}
+function cmp(e,st){const h=e.sleepHours;if(h<6&&e.tired==='no')st=bmp(st,'yellow');if(h<5&&e.thoughtSpeed==='much_faster')st=bmp(st,'orange');if(h<5&&e.certainty==='extremely_certain')st=bmp(st,'orange');if(e.medication==='no'&&h<6){const i=SO.indexOf(st);if(i<3)st=SO[i+1]}if(e.noAdvice==='yes'&&e.certainty==='extremely_certain')st=bmp(st,'orange');const p=gp(e.date,1);if(p){if(p.sleepHours<6&&h<6)st=bmp(st,'yellow');const tc=e.thoughtSpeed==='much_faster'||e.certainty==='extremely_certain',pc=p.thoughtSpeed==='much_faster'||p.certainty==='extremely_certain';if(tc&&pc)st=bmp(st,'orange')}return st}
+function getEsc(e){const p=gp(e.date,1);if(e.state==='red')return'red-e';if(p&&p.state==='red')return'red-e';if(p&&p.state==='orange'&&(e.state==='orange'||e.state==='red'))return e.state==='red'?'red-e':'orn-e';return null}
+function missed(){if(!D.entries.length)return 0;const s=[...D.entries].sort((a,b)=>b.date.localeCompare(a.date));return Math.floor((new Date(td()+'T00:00:00')-new Date(s[0].date+'T00:00:00'))/864e5)}
 
-function compound(e,st){
-  const h=e.sleepHours;
-  if(h<6&&e.tired==='no')st=bump(st,'yellow');
-  if(h<5&&e.thoughtSpeed==='much_faster')st=bump(st,'orange');
-  if(h<5&&e.certainty==='extremely_certain')st=bump(st,'orange');
-  if(e.medication==='no'&&h<6){const i=SO.indexOf(st);if(i<3)st=SO[i+1]}
-  const prev=getPrev(e.date,1);
-  if(prev){
-    if(prev.sleepHours<6&&h<6)st=bump(st,'yellow');
-    const tc=e.thoughtSpeed==='much_faster'||e.certainty==='extremely_certain';
-    const pc=prev.thoughtSpeed==='much_faster'||prev.certainty==='extremely_certain';
-    if(tc&&pc)st=bump(st,'orange');
-  }
-  return st;
-}
-
-// Tabs
-$$('.tab').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
-function switchTab(id){
-  $$('.tab').forEach(t=>{t.classList.toggle('active',t.dataset.tab===id);t.setAttribute('aria-selected',t.dataset.tab===id)});
-  $$('.tab-content').forEach(c=>c.classList.toggle('active',c.id===`tab-${id}`));
-  $('#tab-settings').classList.remove('active');
-  if(id==='history')renderHistory();if(id==='meds')renderMeds();
-}
-$('#settingsToggle').addEventListener('click',()=>{
-  const s=$('#tab-settings'),v=s.classList.contains('active');
-  $$('.tab-content').forEach(c=>c.classList.remove('active'));
-  if(!v){s.classList.add('active');$$('.tab').forEach(t=>{t.classList.remove('active');t.setAttribute('aria-selected','false')});loadSettings()}
-  else switchTab('check');
-});
-$('#settingsBack').addEventListener('click',()=>switchTab('check'));
+// Navigation
+function go(id){$$('.screen').forEach(s=>s.classList.toggle('active',s.id==='s-'+id));$$('.nav-item').forEach(n=>{n.classList.toggle('active',n.dataset.s===id)});if(id==='history')rHist();if(id==='meds')rMeds()}
+$$('.nav-item').forEach(n=>n.addEventListener('click',()=>go(n.dataset.s)));
+$('#avatarBtn').addEventListener('click',()=>{$$('.screen').forEach(s=>s.classList.remove('active'));$('#s-settings').classList.add('active');$$('.nav-item').forEach(n=>n.classList.remove('active'));ldSet()});
+$('#setBack').addEventListener('click',()=>go('home'));
+$('#startCheck').addEventListener('click',()=>{$$('.screen').forEach(s=>s.classList.remove('active'));$('#s-check').classList.add('active');$$('.nav-item').forEach(n=>n.classList.remove('active'));updProg()});
+$('#checkBack').addEventListener('click',()=>go('home'));
+$('#editBtn').addEventListener('click',()=>{const t=D.entries.find(e=>e.date===td());$$('.screen').forEach(s=>s.classList.remove('active'));$('#s-check').classList.add('active');if(t)prefill(t);updProg()});
 
 // Pills
-$$('.pills').forEach(g=>{g.querySelectorAll('.pill').forEach(p=>{p.addEventListener('click',()=>{g.querySelectorAll('.pill').forEach(x=>x.classList.remove('selected'));p.classList.add('selected');p.closest('.field')?.classList.remove('field-error')})})});
+$$('.pills').forEach(g=>{g.querySelectorAll('.pill').forEach(p=>{p.addEventListener('click',()=>{g.querySelectorAll('.pill').forEach(x=>x.classList.remove('selected'));p.classList.add('selected');p.closest('.field')?.classList.remove('field-error');updProg()})})});
+const slE=$('#sleepH');$$('.sleep-btn').forEach(b=>{b.addEventListener('click',()=>{let v=parseFloat(slE.value)||7;slE.value=Math.max(0,Math.min(12,v+parseFloat(b.dataset.d)))})});
 
-// Sleep
-const sleepEl=$('#sleepHours');
-$$('.sleep-btn').forEach(b=>{b.addEventListener('click',()=>{let v=parseFloat(sleepEl.value)||7;sleepEl.value=Math.max(0,Math.min(12,v+parseFloat(b.dataset.delta)))})});
+// Progress dots
+function updProg(){const total=FL.length;let done=0;FL.forEach(f=>{if($(`.pills[data-field="${f}"] .pill.selected`))done++});const prog=$('#checkProg');prog.innerHTML='';for(let i=0;i<total;i++){const dot=document.createElement('div');dot.className='check-dot'+(i<done?' done':'')+(i===done?' current':'');prog.appendChild(dot)}}
 
 // Submit
-$('#checkForm').addEventListener('submit',async e=>{
-  e.preventDefault();
-  let ok=true;
-  for(const f of FIELDS){const g=$(`.pills[data-field="${f}"]`);if(!g.querySelector('.pill.selected')){g.closest('.field').classList.add('field-error');if(ok)g.closest('.field').scrollIntoView({behavior:'smooth',block:'center'});ok=false}}
-  if(!ok){$('#submitBtn').classList.add('shake');setTimeout(()=>$('#submitBtn').classList.remove('shake'),300);return}
+$('#checkForm').addEventListener('submit',async ev=>{ev.preventDefault();let ok=true;for(const f of FL){const g=$(`.pills[data-field="${f}"]`);if(!g.querySelector('.pill.selected')){g.closest('.field').classList.add('field-error');if(ok)g.closest('.field').scrollIntoView({behavior:'smooth',block:'center'});ok=false}}if(!ok){$('#submitBtn').classList.add('shake');setTimeout(()=>$('#submitBtn').classList.remove('shake'),300);return}
+const en={date:td(),sleepHours:parseFloat(slE.value)||7};FL.forEach(f=>{const s=$(`.pills[data-field="${f}"] .pill.selected`);en[f]=s?s.dataset.value:null});en.score=sc(en);en.state=cmp(en,s2s(en.score));
+const ix=D.entries.findIndex(e=>e.date===td());if(ix>=0)D.entries[ix]=en;else D.entries.push(en);await sv();
+if(en.state==='orange'||en.state==='red')showHS(en);else{go('home');showDash(en)}});
 
-  const entry={date:today(),sleepHours:parseFloat(sleepEl.value)||7};
-  FIELDS.forEach(f=>{const s=$(`.pills[data-field="${f}"] .pill.selected`);entry[f]=s?s.dataset.value:null});
-  entry.score=score(entry);entry.state=compound(entry,s2state(entry.score));
+let pending=null;
+function showHS(en){pending=en;$('#hs').classList.remove('hidden');if(en.state==='red'){$('#hsI').textContent='⛔';$('#hsT').textContent='עצור.';$('#hsP').innerHTML='רמת סיכון גבוהה.<br>אל תקבל החלטות.'}else{$('#hsI').textContent='⏸';$('#hsT').textContent='עצור רגע.';$('#hsP').innerHTML='סיכון מוגבר היום.<br>לא זמן להחלטות חשובות.'}}
+$('#hsF').addEventListener('click',()=>{$('#hs').classList.add('hidden');go('home');if(pending)showDash(pending);setTimeout(()=>$('#rAct')?.scrollIntoView({behavior:'smooth'}),400)});
+$('#hsC').addEventListener('click',()=>{$('#hs').classList.add('hidden');go('home');if(pending)showDash(pending)});
 
-  const idx=data.entries.findIndex(e=>e.date===today());
-  if(idx>=0)data.entries[idx]=entry;else data.entries.push(entry);
-  await save();showResult(entry);renderStrip();
-});
+function prefill(en){slE.value=en.sleepHours;FL.forEach(f=>{if(!en[f])return;$(`.pills[data-field="${f}"]`)?.querySelectorAll('.pill').forEach(p=>p.classList.toggle('selected',p.dataset.value===en[f]))})}
 
-// Result
-function showResult(entry){
-  const card=$('#resultCard'),form=$('#checkForm'),info=STATES[entry.state];
-  card.classList.remove('hidden');form.style.display='none';
-  const badge=$('#resultBadge');badge.className='result-badge '+entry.state;badge.textContent=info.icon;
-  $('#resultTitle').textContent=info.title;$('#resultDesc').textContent=info.desc;
+// Dashboard
+function showDash(en){
+  const rh=$('#resultHero');rh.classList.remove('hidden');
+  const info=SI[en.state];
+  const bg=$('#rhBadge');bg.className='result-hero-badge '+en.state;bg.textContent=info.i;
+  $('#rhTitle').textContent=info.t;$('#rhDesc').textContent=info.d;
 
-  const act=$('#resultActions');
-  act.innerHTML='<ul>'+ACTIONS[entry.state].map(a=>`<li>${a}</li>`).join('')+'</ul>';
+  // Ring
+  const rw=$('#ringWrap');rw.style.display='flex';
+  const fg=$('#ringFg');const circ=440;const stMap={green:.15,yellow:.4,orange:.7,red:1};
+  const offset=circ*(1-stMap[en.state]);
+  const colors={green:'var(--grn)',yellow:'var(--ylw)',orange:'var(--orn)',red:'var(--red)'};
+  fg.style.stroke=colors[en.state];
+  setTimeout(()=>{fg.style.strokeDashoffset=offset},50);
+  $('#ringIcon').textContent=info.i;$('#ringLabel').textContent=info.t;$('#ringSc').textContent=`ניקוד ${en.score}`;
 
-  if((entry.state==='orange'||entry.state==='red')&&data.settings.safetyRulesNote)
-    act.innerHTML+=`<div class="result-extra" style="background:var(--${entry.state}-bg)"><strong>הכללים שלך:</strong> ${esc(data.settings.safetyRulesNote)}</div>`;
-  if((entry.state==='orange'||entry.state==='red')&&data.settings.trustedContactName){
-    const ph=data.settings.trustedContactPhone;
-    const lk=ph?`<a href="tel:${esc(ph)}" style="color:var(--accent);font-weight:600">${esc(data.settings.trustedContactName)} — ${esc(ph)}</a>`:esc(data.settings.trustedContactName);
-    act.innerHTML+=`<div class="result-extra" style="background:var(--${entry.state}-bg)">איש קשר: ${lk}</div>`;
-  }
+  // Quick stats
+  $('#qStats').style.display='grid';
+  $('#qSleep').textContent=en.sleepHours+'h';
+  let sk=0;const t=new Date();for(let i=0;i<365;i++){const d=new Date(t);d.setDate(d.getDate()-i);if(D.entries.find(x=>x.date===d.toISOString().slice(0,10)))sk++;else break}
+  $('#qStreak').textContent=sk;
+  $('#qMed').textContent=MLL[en.medication]||'—';
 
-  $('#resultScore').textContent=`ניקוד: ${entry.score}`;$('#resultDate').textContent=fmtDate(entry.date);
-  $('#updateTodayBtn').onclick=()=>{card.classList.add('hidden');form.style.display='';prefill(entry)};
+  // Meta warning
+  const mw=$('#mWarn'),sm=SO.indexOf(en.state)>=1&&(en.certainty==='more_certain'||en.certainty==='extremely_certain'||en.noAdvice==='yes');
+  mw.classList.toggle('show',sm);mw.style.background=`var(--${en.state}-b)`;mw.style.color=`var(--${en.state})`;mw.style.borderColor=`var(--${en.state})`;
+
+  const et=getEsc(en),eb=$('#escB');if(et){eb.classList.add('show');eb.className='esc-banner show '+et;eb.textContent=et==='red-e'?'⚠ פנה לאדם מהימן או תמיכה מקצועית עכשיו.':'⚠ יומיים ברצף בסיכון. שקול לפנות למישהו.'}else eb.classList.remove('show');
+
+  const es=$('#eAlert'),signs=D.settings.earlySigns||[];if(signs.length&&SO.indexOf(en.state)>=1){es.classList.add('show');es.style.background=`var(--${en.state}-b)`;es.style.borderColor=`var(--${en.state})`;es.style.color=`var(--${en.state})`;es.innerHTML=`<strong>הסימנים שלך:</strong>${signs.map(s=>'• '+esc(s)).join('<br>')}`}else es.classList.remove('show');
+
+  const act=$('#rAct');act.innerHTML='<ul>'+AC[en.state].map(a=>`<li>${a}</li>`).join('')+'</ul>';
+  if((en.state==='orange'||en.state==='red')&&D.settings.safetyRulesNote)act.innerHTML+=`<div class="r-extra" style="background:var(--${en.state}-b);border-color:var(--${en.state});color:var(--${en.state})"><strong>הכללים שלך:</strong> ${esc(D.settings.safetyRulesNote)}</div>`;
+
+  const ca=$('#cBtns');if((en.state==='orange'||en.state==='red')&&D.settings.trustedContactName){const ph=D.settings.trustedContactPhone,tmpl=D.settings.smsTemplate||'';let h='';if(ph){h+=`<a href="tel:${esc(ph)}" class="c-call">📞 ${esc(D.settings.trustedContactName)}</a>`;if(tmpl)h+=`<a href="sms:${esc(ph)}${/iPhone|iPad|iPod/.test(navigator.userAgent)?'&':'?'}body=${encodeURIComponent(tmpl)}" class="c-sms">💬 הודעה</a>`}ca.innerHTML=h;ca.style.display=h?'flex':'none'}else ca.style.display='none';
+
+  $('#dBox').classList.toggle('show',SO.indexOf(en.state)>=1);
+  $('#rSc').textContent=`ניקוד: ${en.score}`;$('#rDt').textContent=fmt(en.date);
+  $('#actionTxt').textContent='עדכן בדיקה';
+  rWeek();
 }
 
-function prefill(entry){
-  sleepEl.value=entry.sleepHours;
-  FIELDS.forEach(f=>{if(!entry[f])return;$(`.pills[data-field="${f}"]`).querySelectorAll('.pill').forEach(p=>p.classList.toggle('selected',p.dataset.value===entry[f]))});
-}
+$('#dBtn').addEventListener('click',()=>{const tm=new Date();tm.setDate(tm.getDate()+1);tm.setHours(9,0,0,0);if(confirm('תזכורת ליומן מחר 9:00?')){const dt=tm.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';const ics=`BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:${dt}\nDTEND:${dt}\nSUMMARY:בדוק לפני החלטה\nBEGIN:VALARM\nTRIGGER:-PT0M\nACTION:DISPLAY\nDESCRIPTION:Clarity\nEND:VALARM\nEND:VEVENT\nEND:VCALENDAR`;const b=new Blob([ics],{type:'text/calendar'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='reminder.ics';a.click()}});
 
-// Strip
-function renderStrip(){
-  const dots=$('#weekDots'),str=$('#streakDisplay'),t=new Date();
-  let html='';
-  for(let i=6;i>=0;i--){const d=new Date(t);d.setDate(d.getDate()-i);const e=data.entries.find(x=>x.date===d.toISOString().slice(0,10));html+=`<div class="week-dot ${e?e.state:''}"></div>`}
-  dots.innerHTML=html;
-  let streak=0;for(let i=0;i<365;i++){const d=new Date(t);d.setDate(d.getDate()-i);if(data.entries.find(x=>x.date===d.toISOString().slice(0,10)))streak++;else break}
-  str.textContent=streak>0?`🔥 ${streak} ימים ברצף`:'';
-}
+function rWeek(){const bars=$('#wBars'),t=new Date();const sm={green:16,yellow:32,orange:48,red:64};let h='';
+for(let i=6;i>=0;i--){const d=new Date(t);d.setDate(d.getDate()-i);const ds=d.toISOString().slice(0,10),e=D.entries.find(x=>x.date===ds),dy=DY[d.getDay()];
+if(e){const cls=e.state==='green'?'grn':e.state==='yellow'?'ylw':e.state==='orange'?'orn':'red';h+=`<div class="w-bar ${cls}" style="height:${sm[e.state]}px"><span class="w-bar-day">${dy}</span></div>`}
+else h+=`<div class="w-bar empty" style="height:4px"><span class="w-bar-day">${dy}</span></div>`}bars.innerHTML=h}
+
+function chkMissed(){const b=$('#missedB'),m=missed();if(m>=2){$('#missedTxt').textContent=`לא מילאת בדיקה ${m} ימים`;b.classList.add('show')}else b.classList.remove('show')}
 
 // History
-function renderHistory(){
-  const list=$('#historyList'),empty=$('#historyEmpty');
-  const recent=[...data.entries].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,7);
-  if(!recent.length){empty.style.display='';list.innerHTML='';return}
-  empty.style.display='none';
-  list.innerHTML=recent.map((e,i)=>`
-    <div class="history-item"><div class="history-row"><span class="history-date">${fmtDate(e.date)}</span><span class="badge ${e.state}">${SB[e.state]}</span></div>
-    <div class="history-sub"><span>שינה: ${e.sleepHours}h</span><span>תרופות: ${ML[e.medication]||'—'}</span><span>ניקוד: ${e.score}</span></div>
-    <div class="history-detail" id="hd-${i}">מחשבות: ${TL[e.thoughtSpeed]||'—'}<br>ביטחון: ${CL[e.certainty]||'—'}<br>הבנה חשובה: ${e.figuredOut==='yes'?'כן':e.figuredOut==='maybe'?'אולי':'לא'}<br>דחף לפעול: ${e.urgeToAct||'—'}<br>החלטות מהירות: ${e.fastDecisions==='yes'?'כן':e.fastDecisions==='a_little'?'קצת':'לא'}<br>חוסר מנוחה: ${e.restless==='yes'?'כן':e.restless==='a_little'?'קצת':'לא'}<br>עייף: ${e.tired==='yes'?'כן':'לא'}</div></div>
-  `).join('');
-  list.querySelectorAll('.history-item').forEach(item=>item.addEventListener('click',()=>item.querySelector('.history-detail').classList.toggle('open')));
-}
+function rHist(){const l=$('#histList'),em=$('#histEmp'),rec=[...D.entries].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,7);if(!rec.length){em.style.display='';l.innerHTML='';return}em.style.display='none';
+l.innerHTML=rec.map(e=>`<div class="hist-item"><div class="hist-row"><span class="hist-date">${fmt(e.date)}</span><span class="badge ${e.state}">${SBL[e.state]}</span></div><div class="hist-sub"><span>${e.sleepHours}h</span><span>${MLL[e.medication]||'—'}</span><span>ניקוד ${e.score}</span></div><div class="hist-det">מחשבות: ${THL[e.thoughtSpeed]||'—'} · ביטחון: ${CLL[e.certainty]||'—'}<br>הבנה: ${e.figuredOut==='yes'?'כן':e.figuredOut==='maybe'?'אולי':'לא'} · דחף: ${e.urgeToAct||'—'}<br>החלטות: ${e.fastDecisions==='yes'?'כן':e.fastDecisions==='a_little'?'קצת':'לא'} · אי-שקט: ${e.restless==='yes'?'כן':e.restless==='a_little'?'קצת':'לא'}</div></div>`).join('');
+l.querySelectorAll('.hist-item').forEach(it=>it.addEventListener('click',()=>it.querySelector('.hist-det').classList.toggle('open')))}
 
 // Meds
-let editMedId=null;
-function renderMeds(){
-  const list=$('#medsList'),empty=$('#medsEmpty');
-  if(!data.medications.length){empty.style.display='';list.innerHTML='';return}
-  empty.style.display='none';
-  list.innerHTML=data.medications.map(m=>`
-    <div class="med-card ${m.active?'':'med-off'}"><div class="med-info" data-mid="${m.id}"><div class="med-name">${esc(m.name)}</div>${m.dosage?`<div class="med-dose">${esc(m.dosage)}</div>`:''}${m.note?`<div class="med-note">${esc(m.note)}</div>`:''}</div>
-    <div class="med-btns"><button class="toggle ${m.active?'on':''}" data-tid="${m.id}" aria-label="הפעל/כבה"></button><button class="del-btn" data-did="${m.id}" aria-label="מחק">×</button></div></div>
-  `).join('');
-
-  list.querySelectorAll('.toggle').forEach(b=>b.addEventListener('click',async ev=>{ev.stopPropagation();const m=data.medications.find(x=>x.id===b.dataset.tid);if(m){m.active=!m.active;await save();renderMeds()}}));
-  list.querySelectorAll('.del-btn').forEach(b=>b.addEventListener('click',async ev=>{ev.stopPropagation();if(confirm('למחוק תרופה זו?')){data.medications=data.medications.filter(x=>x.id!==b.dataset.did);await save();renderMeds()}}));
-  list.querySelectorAll('.med-info').forEach(el=>el.addEventListener('click',()=>{const m=data.medications.find(x=>x.id===el.dataset.mid);if(m)openMedModal(m)}));
-}
-
-function openMedModal(med){
-  editMedId=med?med.id:null;
-  $('#medModalTitle').textContent=med?'ערוך תרופה':'הוסף תרופה';
-  $('#medName').value=med?med.name:'';$('#medDosage').value=med?(med.dosage||''):'';$('#medNote').value=med?(med.note||''):'';
-  $('#medModal').classList.remove('hidden');
-}
-$('#addMedBtn').addEventListener('click',()=>openMedModal(null));
-$('#cancelMedBtn').addEventListener('click',()=>$('#medModal').classList.add('hidden'));
-$('#saveMedBtn').addEventListener('click',async()=>{
-  const name=$('#medName').value.trim();if(!name)return;
-  const obj={id:editMedId||'med_'+Date.now(),name,dosage:$('#medDosage').value.trim(),note:$('#medNote').value.trim(),active:true};
-  if(editMedId){const i=data.medications.findIndex(x=>x.id===editMedId);if(i>=0){obj.active=data.medications[i].active;data.medications[i]=obj}}
-  else data.medications.push(obj);
-  await save();renderMeds();$('#medModal').classList.add('hidden');
-});
-$('#medModal').addEventListener('click',e=>{if(e.target===$('#medModal'))$('#medModal').classList.add('hidden')});
+let emId=null;
+function rMeds(){const l=$('#medsList'),em=$('#medsEmp');if(!D.medications.length){em.style.display='';l.innerHTML='';return}em.style.display='none';
+l.innerHTML=D.medications.map(m=>`<div class="med-card ${m.active?'':'med-off'}"><div class="med-info" data-m="${m.id}"><div class="med-nm">${esc(m.name)}</div>${m.dosage?`<div class="med-ds">${esc(m.dosage)}</div>`:''}${m.note?`<div class="med-nt">${esc(m.note)}</div>`:''}</div><div class="med-btns"><button class="tog ${m.active?'on':''}" data-t="${m.id}"></button><button class="del" data-x="${m.id}">×</button></div></div>`).join('');
+l.querySelectorAll('.tog').forEach(b=>b.addEventListener('click',async ev=>{ev.stopPropagation();const m=D.medications.find(x=>x.id===b.dataset.t);if(m){m.active=!m.active;await sv();rMeds()}}));
+l.querySelectorAll('.del').forEach(b=>b.addEventListener('click',async ev=>{ev.stopPropagation();if(confirm('למחוק?')){D.medications=D.medications.filter(x=>x.id!==b.dataset.x);await sv();rMeds()}}));
+l.querySelectorAll('.med-info').forEach(el=>el.addEventListener('click',()=>{const m=D.medications.find(x=>x.id===el.dataset.m);if(m)oM(m)}))}
+function oM(m){emId=m?m.id:null;$('#mmT').textContent=m?'ערוך':'הוסף תרופה';$('#mN').value=m?m.name:'';$('#mD').value=m?(m.dosage||''):'';$('#mNo').value=m?(m.note||''):'';$('#medMod').classList.remove('hidden')}
+$('#addMed').addEventListener('click',()=>oM(null));$('#canMed').addEventListener('click',()=>$('#medMod').classList.add('hidden'));
+$('#saveMed').addEventListener('click',async()=>{const n=$('#mN').value.trim();if(!n)return;const o={id:emId||'m'+Date.now(),name:n,dosage:$('#mD').value.trim(),note:$('#mNo').value.trim(),active:true};if(emId){const i=D.medications.findIndex(x=>x.id===emId);if(i>=0){o.active=D.medications[i].active;D.medications[i]=o}}else D.medications.push(o);await sv();rMeds();$('#medMod').classList.add('hidden')});
+$('#medMod').addEventListener('click',e=>{if(e.target===$('#medMod'))$('#medMod').classList.add('hidden')});
 
 // Settings
-function loadSettings(){
-  $('#safetyRules').value=data.settings.safetyRulesNote||'';
-  $('#contactName').value=data.settings.trustedContactName||'';
-  $('#contactPhone').value=data.settings.trustedContactPhone||'';
-  $('#storageStatus').innerHTML=`${data.entries.length} רשומות שמורות`;
-}
-['safetyRules','contactName','contactPhone'].forEach(id=>{
-  $(`#${id}`).addEventListener('input',async()=>{
-    data.settings.safetyRulesNote=$('#safetyRules').value;
-    data.settings.trustedContactName=$('#contactName').value;
-    data.settings.trustedContactPhone=$('#contactPhone').value;
-    await save();
-  });
-});
-$('#resetDataBtn').addEventListener('click',async()=>{if(confirm('האם אתה בטוח? כל הנתונים יימחקו.')){if(confirm('בטוח לגמרי? אין דרך לשחזר.')){await DB.clear();data=DB.defaults();switchTab('check');init()}}});
+function ldSet(){$('#sR').value=D.settings.safetyRulesNote||'';$('#cN').value=D.settings.trustedContactName||'';$('#cP').value=D.settings.trustedContactPhone||'';$('#smsT').value=D.settings.smsTemplate||'';rSig();$('#stSt').innerHTML=`${D.entries.length} רשומות`}
+['sR','cN','cP','smsT'].forEach(id=>{$(`#${id}`).addEventListener('input',async()=>{D.settings.safetyRulesNote=$('#sR').value;D.settings.trustedContactName=$('#cN').value;D.settings.trustedContactPhone=$('#cP').value;D.settings.smsTemplate=$('#smsT').value;await sv()})});
+function rSig(){const c=$('#sigC'),s=D.settings.earlySigns||[];c.innerHTML=s.map((x,i)=>`<span class="tag">${esc(x)}<button class="tag-x" data-i="${i}">×</button></span>`).join('');c.querySelectorAll('.tag-x').forEach(b=>b.addEventListener('click',async()=>{D.settings.earlySigns.splice(+b.dataset.i,1);await sv();rSig()}))}
+$('#aSig').addEventListener('click',async()=>{const inp=$('#nSig'),v=inp.value.trim();if(!v)return;if(!D.settings.earlySigns)D.settings.earlySigns=[];D.settings.earlySigns.push(v);inp.value='';await sv();rSig()});
+$('#rstBtn').addEventListener('click',async()=>{if(confirm('למחוק הכל?')){if(confirm('בטוח?')){await DB.clear();D=DB.df();go('home');init()}}});
+$('#expBtn').addEventListener('click',()=>{const b=new Blob([JSON.stringify(D,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`clarity-${td()}.json`;a.click()});
+$('#impIn').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=async ev=>{try{const im=JSON.parse(ev.target.result);if(im.entries){if(confirm(`ייבוא ${im.entries.length} רשומות?`)){D=im;if(!D.settings.earlySigns)D.settings.earlySigns=[];if(!D.settings.smsTemplate)D.settings.smsTemplate='';await sv();init()}}else alert('לא תקין')}catch{alert('שגיאה')}};r.readAsText(f);e.target.value=''});
 
-// Export/Import
-$('#exportBtn').addEventListener('click',()=>{
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`clarity-check-${today()}.json`;a.click();URL.revokeObjectURL(a.href);
-});
-$('#importInput').addEventListener('change',async e=>{
-  const file=e.target.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=async ev=>{try{const imp=JSON.parse(ev.target.result);if(imp.entries&&Array.isArray(imp.entries)){if(confirm(`לייבא ${imp.entries.length} רשומות? זה יחליף את כל הנתונים.`)){data=imp;await save();init()}}else alert('קובץ לא תקין.')}catch{alert('שגיאה בקריאת הקובץ.')}};
-  reader.readAsText(file);e.target.value='';
-});
-
-// Init
 function init(){
-  const t=data.entries.find(e=>e.date===today());
-  if(t)showResult(t);
-  else{$('#resultCard').classList.add('hidden');$('#checkForm').style.display='';$$('.pill').forEach(p=>p.classList.remove('selected'));sleepEl.value=7}
-  renderStrip();renderHistory();renderMeds();
-}
-init();
-
-})();
+  const t=D.entries.find(e=>e.date===td());
+  if(t){showDash(t)}else{$('#resultHero').classList.add('hidden');$('#ringWrap').style.display='none';$('#qStats').style.display='none';$('#actionTxt').textContent='התחל בדיקה יומית';$$('.pill').forEach(p=>p.classList.remove('selected'));slE.value=7}
+  rWeek();rHist();rMeds();chkMissed()}
+init()})();
 </script>
 </body>
 </html>
