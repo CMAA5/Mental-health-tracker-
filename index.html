@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Clarity Check">
+  <title>Clarity Check</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#f2f0ec;--surface:#fff;--text:#2b2926;--text2:#807b74;--border:#e6e2dc;
+      --accent:#5a7a6b;--accent-d:#4a6759;
+      --green:#6b9e7e;--green-bg:#e6f0ea;
+      --yellow:#bfa044;--yellow-bg:#f4edda;
+      --orange:#c07545;--orange-bg:#f4e6d8;
+      --red:#b25555;--red-bg:#f3dcdc;
+      --r:14px;--rs:10px;
+      --shadow:0 1px 4px rgba(44,41,38,.06);
+      --shadow-up:0 4px 16px rgba(44,41,38,.09);
+      --font:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,Helvetica,sans-serif;
+      --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)
+    }
+    html{font-size:16px;-webkit-text-size-adjust:100%}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.5;min-height:100dvh;-webkit-font-smoothing:antialiased;overflow-x:hidden;background-image:radial-gradient(circle at 20% 80%,rgba(90,122,107,.03) 0%,transparent 50%),radial-gradient(circle at 80% 20%,rgba(191,160,68,.03) 0%,transparent 50%)}
+    #app{max-width:480px;margin:0 auto}
+
+    /* Top bar */
+    .top-bar{display:flex;align-items:center;justify-content:space-between;padding:calc(var(--sat) + 14px) 20px 8px;position:sticky;top:0;z-index:100;background:var(--bg)}
+    .app-title{font-size:1.2rem;font-weight:700;letter-spacing:-.03em}
+    .icon-btn{width:38px;height:38px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--border);border-radius:50%;color:var(--text2);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .12s}
+    .icon-btn:active{background:var(--border)}
+
+    /* Tabs */
+    .tab-bar{display:flex;gap:4px;padding:4px 20px 8px;position:sticky;top:calc(var(--sat) + 50px);z-index:99;background:var(--bg)}
+    .tab{flex:1;padding:9px 6px;border:none;background:transparent;color:var(--text2);font-family:var(--font);font-size:.85rem;font-weight:600;border-radius:var(--rs);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .18s}
+    .tab.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+    .tab:active{transform:scale(.96)}
+
+    /* Tab content */
+    .tab-content{display:none;padding:0 20px 120px;animation:fadeUp .22s ease}
+    .tab-content.active{display:block}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+    /* Cards */
+    .card{background:var(--surface);border-radius:var(--r);padding:18px 16px;margin-bottom:10px;box-shadow:var(--shadow)}
+    .card-label{font-size:.75rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:14px}
+
+    /* Fields */
+    .field{margin-bottom:16px}.field:last-child{margin-bottom:0}
+    .field-label{display:block;font-size:.88rem;font-weight:500;margin-bottom:8px;line-height:1.4}
+
+    /* Sleep */
+    .sleep-input{display:flex;align-items:center;justify-content:center;gap:18px}
+    .sleep-btn{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--border);background:var(--bg);font-size:1.3rem;color:var(--text);cursor:pointer;display:grid;place-items:center;font-family:var(--font);-webkit-tap-highlight-color:transparent;transition:all .12s}
+    .sleep-btn:active{background:var(--border);transform:scale(.93)}
+    .sleep-val{width:56px;text-align:center;font-size:1.7rem;font-weight:700;color:var(--text);border:none;background:transparent;font-family:var(--font);-moz-appearance:textfield}
+    .sleep-val::-webkit-inner-spin-button,.sleep-val::-webkit-outer-spin-button{-webkit-appearance:none}
+
+    /* Pills */
+    .pills{display:flex;flex-wrap:wrap;gap:6px}
+    .pill{flex:1 1 auto;min-width:0;padding:10px 10px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--surface);color:var(--text2);font-family:var(--font);font-size:.82rem;font-weight:500;cursor:pointer;text-align:center;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:all .12s}
+    .pill:active{transform:scale(.95)}
+    .pill.selected{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 8px rgba(90,122,107,.25)}
+    .field-error .pills{outline:2px solid var(--red);outline-offset:3px;border-radius:var(--rs)}
+
+    /* Buttons */
+    .btn{display:block;width:100%;padding:14px 20px;border:none;border-radius:var(--r);font-family:var(--font);font-size:.95rem;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .12s}
+    .btn:active{transform:scale(.98)}
+    .btn-primary{background:var(--accent);color:#fff;box-shadow:var(--shadow);margin-top:6px}
+    .btn-primary:active{background:var(--accent-d)}
+    .btn-secondary{background:var(--bg);color:var(--text);border:1px solid var(--border)}
+    .btn-ghost{background:transparent;color:var(--text2)}
+    .btn-danger{background:var(--red-bg);color:var(--red)}
+    .btn-sm{display:inline-block;padding:5px 11px;font-size:.75rem;font-weight:600;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);color:var(--text2);cursor:pointer;font-family:var(--font);-webkit-tap-highlight-color:transparent}
+
+    /* Summary strip */
+    .summary-strip{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:var(--surface);border-radius:var(--r);margin-bottom:12px;box-shadow:var(--shadow)}
+    .streak{font-size:.78rem;color:var(--text2);font-weight:500}
+    .week-dots{display:flex;gap:5px;direction:ltr}
+    .week-dot{width:10px;height:10px;border-radius:50%;background:var(--border);transition:background .2s}
+    .week-dot.green{background:var(--green)}.week-dot.yellow{background:var(--yellow)}.week-dot.orange{background:var(--orange)}.week-dot.red{background:var(--red)}
+
+    /* Result card */
+    .result-card{background:var(--surface);border-radius:var(--r);padding:24px 20px;margin-bottom:14px;box-shadow:var(--shadow-up);text-align:center;animation:slideUp .3s ease}
+    .result-card.hidden{display:none}
+    @keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    .result-badge{width:52px;height:52px;border-radius:50%;margin:0 auto 12px;display:grid;place-items:center;font-size:1.4rem;font-weight:700}
+    .result-badge.green{background:var(--green-bg);color:var(--green)}
+    .result-badge.yellow{background:var(--yellow-bg);color:var(--yellow)}
+    .result-badge.orange{background:var(--orange-bg);color:var(--orange)}
+    .result-badge.red{background:var(--red-bg);color:var(--red)}
+    .result-title{font-size:1.15rem;font-weight:700;margin-bottom:4px}
+    .result-desc{font-size:.88rem;color:var(--text2);margin-bottom:16px;line-height:1.55}
+    .result-actions{text-align:right;margin-bottom:14px}
+    .result-actions ul{list-style:none;padding:0}
+    .result-actions li{padding:8px 12px;background:var(--bg);border-radius:var(--rs);margin-bottom:5px;font-size:.84rem;line-height:1.5}
+    .result-actions li::before{content:'→ ';color:var(--text2)}
+    .result-extra{margin-top:8px;padding:10px 12px;border-radius:var(--rs);font-size:.84rem;line-height:1.5;text-align:right}
+    .result-meta{display:flex;justify-content:space-between;font-size:.73rem;color:var(--text2);padding-top:12px;border-top:1px solid var(--border);margin-bottom:12px}
+
+    /* History */
+    .history-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .history-btns{display:flex;gap:6px}
+    .page-title{font-size:1.05rem;font-weight:700}
+    .history-list{display:flex;flex-direction:column;gap:8px}
+    .history-item{background:var(--surface);border-radius:var(--r);padding:13px 16px;box-shadow:var(--shadow);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .1s}
+    .history-item:active{background:var(--bg)}
+    .history-row{display:flex;align-items:center;justify-content:space-between}
+    .history-date{font-size:.84rem;font-weight:600}
+    .badge{font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.03em}
+    .badge.green{background:var(--green-bg);color:var(--green)}
+    .badge.yellow{background:var(--yellow-bg);color:var(--yellow)}
+    .badge.orange{background:var(--orange-bg);color:var(--orange)}
+    .badge.red{background:var(--red-bg);color:var(--red)}
+    .history-sub{display:flex;gap:14px;margin-top:5px;font-size:.76rem;color:var(--text2)}
+    .history-detail{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:.78rem;color:var(--text2);line-height:1.7}
+    .history-detail.open{display:block}
+    .empty{text-align:center;color:var(--text2);font-size:.88rem;padding:40px 20px}
+
+    /* Meds */
+    .meds-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+    .med-card{background:var(--surface);border-radius:var(--r);padding:13px 16px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between}
+    .med-info{flex:1;cursor:pointer}.med-name{font-size:.92rem;font-weight:600}.med-dose{font-size:.8rem;color:var(--text2)}.med-note{font-size:.76rem;color:var(--text2);font-style:italic}
+    .med-btns{display:flex;gap:8px;align-items:center}
+    .toggle{width:42px;height:24px;border-radius:12px;border:none;background:var(--border);position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .2s}
+    .toggle.on{background:var(--green)}
+    .toggle::after{content:'';position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.15);transition:transform .2s}
+    .toggle.on::after{transform:translateX(-18px)}
+    .del-btn{width:30px;height:30px;border:none;background:var(--red-bg);color:var(--red);border-radius:50%;font-size:1rem;cursor:pointer;display:grid;place-items:center;-webkit-tap-highlight-color:transparent}
+    .med-off .med-name,.med-off .med-dose{opacity:.35;text-decoration:line-through}
+
+    /* Modal */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.32);display:flex;align-items:flex-end;justify-content:center;z-index:200;animation:fadeUp .15s ease}
+    .overlay.hidden{display:none}
+    .modal{background:var(--surface);width:100%;max-width:440px;border-radius:var(--r) var(--r) 0 0;padding:22px 20px calc(var(--sab) + 20px);animation:slideUp .25s ease}
+    .modal-title{font-size:1.05rem;font-weight:700;margin-bottom:14px}
+    .modal-btns{display:flex;gap:8px;margin-top:14px}.modal-btns .btn{flex:1}
+
+    /* Settings */
+    .input{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:var(--rs);font-family:var(--font);font-size:.88rem;color:var(--text);background:var(--surface);transition:border-color .12s}
+    .input:focus{outline:none;border-color:var(--accent)}
+    .textarea{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:var(--rs);font-family:var(--font);font-size:.88rem;color:var(--text);background:var(--surface);resize:vertical;line-height:1.5}
+    .textarea:focus{outline:none;border-color:var(--accent)}
+    .placeholder-note{display:flex;align-items:center;gap:8px;padding:12px 14px;background:var(--bg);border-radius:var(--rs);font-size:.83rem;color:var(--text2)}
+    .storage-info{font-size:.8rem;color:var(--text2);margin-bottom:12px;line-height:1.5}
+
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+    .shake{animation:shake .3s ease}
+    .hidden{display:none!important}
+    @supports(padding-bottom:env(safe-area-inset-bottom)){.tab-content{padding-bottom:calc(env(safe-area-inset-bottom) + 100px)}}
+    @media screen and (max-width:768px){input[type="text"],input[type="tel"],input[type="number"],textarea,select{font-size:16px}}
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header class="top-bar">
+      <h1 class="app-title">Clarity Check</h1>
+      <button class="icon-btn" id="settingsToggle" aria-label="הגדרות">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </header>
+
+    <nav class="tab-bar" role="tablist">
+      <button class="tab active" data-tab="check" role="tab" aria-selected="true">בדיקה</button>
+      <button class="tab" data-tab="history" role="tab" aria-selected="false">היסטוריה</button>
+      <button class="tab" data-tab="meds" role="tab" aria-selected="false">תרופות</button>
+    </nav>
+
+    <!-- CHECK -->
+    <main class="tab-content active" id="tab-check">
+      <div id="resultCard" class="result-card hidden">
+        <div class="result-badge" id="resultBadge"></div>
+        <h2 class="result-title" id="resultTitle"></h2>
+        <p class="result-desc" id="resultDesc"></p>
+        <div class="result-actions" id="resultActions"></div>
+        <div class="result-meta"><span id="resultScore"></span><span id="resultDate"></span></div>
+        <button class="btn btn-secondary" id="updateTodayBtn">עדכן בדיקה של היום</button>
+      </div>
+
+      <div class="summary-strip" id="summaryStrip">
+        <div class="streak" id="streakDisplay"></div>
+        <div class="week-dots" id="weekDots"></div>
+      </div>
+
+      <form id="checkForm" class="check-form" autocomplete="off">
+        <section class="card">
+          <h3 class="card-label">שינה</h3>
+          <div class="field">
+            <label class="field-label" for="sleepHours">שעות שינה אמש</label>
+            <div class="sleep-input">
+              <button type="button" class="sleep-btn" data-delta="-0.5" aria-label="פחות">−</button>
+              <input type="number" id="sleepHours" class="sleep-val" min="0" max="12" step="0.5" value="7" inputmode="decimal">
+              <button type="button" class="sleep-btn" data-delta="0.5" aria-label="יותר">+</button>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">מרגיש עייף?</label>
+            <div class="pills" data-field="tired">
+              <button type="button" class="pill" data-value="yes">כן</button>
+              <button type="button" class="pill" data-value="no">לא</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h3 class="card-label">חשיבה</h3>
+          <div class="field">
+            <label class="field-label">כמה מהירות המחשבות היום?</label>
+            <div class="pills" data-field="thoughtSpeed">
+              <button type="button" class="pill" data-value="slower">איטי מהרגיל</button>
+              <button type="button" class="pill" data-value="normal">רגיל</button>
+              <button type="button" class="pill" data-value="faster">מהיר מהרגיל</button>
+              <button type="button" class="pill" data-value="much_faster">מהיר מאוד</button>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">כמה בטוחים מרגישים הרעיונות שלך?</label>
+            <div class="pills" data-field="certainty">
+              <button type="button" class="pill" data-value="normal">רגיל</button>
+              <button type="button" class="pill" data-value="more_certain">בטוח מהרגיל</button>
+              <button type="button" class="pill" data-value="extremely_certain">בטוח לגמרי</button>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">מרגיש שהבנת משהו חשוב במיוחד?</label>
+            <div class="pills" data-field="figuredOut">
+              <button type="button" class="pill" data-value="no">לא</button>
+              <button type="button" class="pill" data-value="maybe">אולי קצת</button>
+              <button type="button" class="pill" data-value="yes">כן</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h3 class="card-label">התנהגות</h3>
+          <div class="field">
+            <label class="field-label">כמה חזק הדחף לפעול מהר?</label>
+            <div class="pills" data-field="urgeToAct">
+              <button type="button" class="pill" data-value="low">נמוך</button>
+              <button type="button" class="pill" data-value="normal">רגיל</button>
+              <button type="button" class="pill" data-value="high">גבוה</button>
+              <button type="button" class="pill" data-value="very_high">גבוה מאוד</button>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">קיבלת או רצית לקבל החלטות מהירות?</label>
+            <div class="pills" data-field="fastDecisions">
+              <button type="button" class="pill" data-value="no">לא</button>
+              <button type="button" class="pill" data-value="a_little">קצת</button>
+              <button type="button" class="pill" data-value="yes">כן</button>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">חסר מנוחה / מופעל מהרגיל?</label>
+            <div class="pills" data-field="restless">
+              <button type="button" class="pill" data-value="no">לא</button>
+              <button type="button" class="pill" data-value="a_little">קצת</button>
+              <button type="button" class="pill" data-value="yes">כן</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h3 class="card-label">תרופות</h3>
+          <div class="field">
+            <label class="field-label">לקחת תרופות היום?</label>
+            <div class="pills" data-field="medication">
+              <button type="button" class="pill" data-value="yes">כן</button>
+              <button type="button" class="pill" data-value="delayed">באיחור</button>
+              <button type="button" class="pill" data-value="no">לא</button>
+              <button type="button" class="pill" data-value="na">לא רלוונטי</button>
+            </div>
+          </div>
+        </section>
+
+        <button type="submit" class="btn btn-primary" id="submitBtn">שמור בדיקה</button>
+      </form>
+    </main>
+
+    <!-- HISTORY -->
+    <div class="tab-content" id="tab-history">
+      <div class="history-top">
+        <h2 class="page-title">7 ימים אחרונים</h2>
+        <div class="history-btns">
+          <button class="btn-sm" id="exportBtn">ייצוא</button>
+          <label class="btn-sm">ייבוא<input type="file" id="importInput" accept=".json" hidden></label>
+        </div>
+      </div>
+      <div id="historyList" class="history-list"></div>
+      <p class="empty" id="historyEmpty">אין רשומות עדיין.</p>
+    </div>
+
+    <!-- MEDS -->
+    <div class="tab-content" id="tab-meds">
+      <h2 class="page-title">רשימת תרופות</h2>
+      <div id="medsList" class="meds-list"></div>
+      <p class="empty" id="medsEmpty">לא נוספו תרופות.</p>
+      <button class="btn btn-secondary" id="addMedBtn">+ הוסף תרופה</button>
+      <div class="overlay hidden" id="medModal">
+        <div class="modal">
+          <h3 class="modal-title" id="medModalTitle">הוסף תרופה</h3>
+          <div class="field"><label class="field-label" for="medName">שם</label><input type="text" id="medName" class="input" placeholder="למשל: Lamotrigine"></div>
+          <div class="field"><label class="field-label" for="medDosage">מינון</label><input type="text" id="medDosage" class="input" placeholder="למשל: 200mg"></div>
+          <div class="field"><label class="field-label" for="medNote">הערה</label><input type="text" id="medNote" class="input" placeholder="למשל: ערב"></div>
+          <div class="modal-btns">
+            <button class="btn btn-primary" id="saveMedBtn">שמור</button>
+            <button class="btn btn-ghost" id="cancelMedBtn">ביטול</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="tab-content" id="tab-settings">
+      <h2 class="page-title">הגדרות</h2>
+      <section class="card">
+        <h3 class="card-label">כללי בטיחות אישיים</h3>
+        <textarea id="safetyRules" class="textarea" rows="3" placeholder="למשל: אם אני בכתום, לא החלטות כספיות 48 שעות"></textarea>
+      </section>
+      <section class="card">
+        <h3 class="card-label">איש קשר מהימן</h3>
+        <div class="field"><label class="field-label" for="contactName">שם</label><input type="text" id="contactName" class="input"></div>
+        <div class="field"><label class="field-label" for="contactPhone">טלפון</label><input type="tel" id="contactPhone" class="input"></div>
+      </section>
+      <section class="card">
+        <div class="placeholder-note"><span>🔒</span> שיתוף עם איש קשר — עדיין לא זמין</div>
+      </section>
+      <section class="card">
+        <h3 class="card-label">אחסון</h3>
+        <p class="storage-info" id="storageStatus"></p>
+        <button class="btn btn-danger" id="resetDataBtn">מחק את כל הנתונים</button>
+      </section>
+      <button class="btn btn-ghost" id="settingsBack">← חזור</button>
+    </div>
+  </div>
+
+<script>
+// ============================================================
+// DB LAYER — IndexedDB primary, localStorage fallback
+// ============================================================
+const DB = (() => {
+  const DB_NAME = 'ClarityCheckDB';
+  const STORE = 'appdata';
+  const KEY = 'main';
+  const LS_KEY = 'claritycheck_data';
+  let _db = null, _useIDB = true;
+
+  function defaults() {
+    return { entries: [], settings: { trustedContactName: '', trustedContactPhone: '', safetyRulesNote: '' }, medications: [] };
+  }
+
+  function openDB() {
+    return new Promise((res, rej) => {
+      if (_db) return res(_db);
+      try {
+        const req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE); };
+        req.onsuccess = e => { _db = e.target.result; res(_db); };
+        req.onerror = () => { _useIDB = false; rej(req.error); };
+      } catch(e) { _useIDB = false; rej(e); }
+    });
+  }
+
+  function idbGet() {
+    return openDB().then(db => new Promise((res, rej) => {
+      const r = db.transaction(STORE, 'readonly').objectStore(STORE).get(KEY);
+      r.onsuccess = () => res(r.result || null);
+      r.onerror = () => rej(r.error);
+    }));
+  }
+
+  function idbSet(data) {
+    return openDB().then(db => new Promise((res, rej) => {
+      const r = db.transaction(STORE, 'readwrite').objectStore(STORE).put(data, KEY);
+      r.onsuccess = () => res();
+      r.onerror = () => rej(r.error);
+    }));
+  }
+
+  function lsGet() { try { const r = localStorage.getItem(LS_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; } }
+  function lsSet(d) { try { localStorage.setItem(LS_KEY, JSON.stringify(d)); } catch(e) {} }
+
+  async function load() {
+    let d = null;
+    if (_useIDB) { try { d = await idbGet(); } catch(e) { _useIDB = false; } }
+    if (!d) d = lsGet();
+    if (d && _useIDB) { try { const x = await idbGet().catch(() => null); if (!x) await idbSet(d); } catch(e) {} }
+    return d || defaults();
+  }
+
+  async function save(d) {
+    lsSet(d);
+    if (_useIDB) { try { await idbSet(d); } catch(e) {} }
+  }
+
+  async function clear() {
+    localStorage.removeItem(LS_KEY);
+    if (_useIDB) { try { const db = await openDB(); db.transaction(STORE, 'readwrite').objectStore(STORE).delete(KEY); } catch(e) {} }
+  }
+
+  return { load, save, clear, defaults };
+})();
+
+// ============================================================
+// APP
+// ============================================================
+(async () => {
+
+let data = await DB.load();
+
+// Constants
+const STATES = {
+  green:  { title:'יציב', desc:'אין שום דבר חריג היום.', icon:'✓' },
+  yellow: { title:'שינוי מוקדם', desc:'יש כמה שינויים שכדאי לשים לב אליהם היום.', icon:'⚠' },
+  orange: { title:'סיכון עולה', desc:'כמה סימנים מופיעים יחד. היום הוא לא יום טוב להחלטות גדולות.', icon:'▲' },
+  red:    { title:'רמת התראה גבוהה', desc:'יש צבר חזק של סימנים היום. האט קצב ופעל לפי השלבים שלך עכשיו.', icon:'●' }
+};
+const ACTIONS = {
+  green:['המשך כרגיל','שמור על שגרה יציבה','בדוק שוב מחר'],
+  yellow:['הימנע מהחלטות גדולות ב-24 השעות הקרובות','הפחת גירויים אם אפשר','תעדף שינה הלילה','הימנע מקפאין מיותר'],
+  orange:['לא לקבל החלטות כספיות או משנות חיים','דחה התחייבויות חדשות','פנה לאדם מהימן','שמור על ערב עם גירויים מינימליים','בדוק עקביות תרופות'],
+  red:['לא לקבל החלטות חשובות','צור קשר עם אדם מהימן עכשיו','שמור על שגרה פשוטה ושקטה','אם הדברים מרגישים מחוץ לשליטה, פנה למקור תמיכה מקצועי']
+};
+const SO = ['green','yellow','orange','red'];
+const FIELDS = ['tired','thoughtSpeed','certainty','figuredOut','urgeToAct','fastDecisions','restless','medication'];
+const HDAYS = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+const SB = {green:'יציב',yellow:'שינוי',orange:'סיכון',red:'התראה'};
+const ML = {yes:'נלקחו',delayed:'באיחור',no:'לא נלקחו',na:'לא רלוונטי'};
+const TL = {slower:'איטי',normal:'רגיל',faster:'מהיר',much_faster:'מהיר מאוד'};
+const CL = {normal:'רגיל',more_certain:'בטוח מהרגיל',extremely_certain:'בטוח לגמרי'};
+
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const today = () => new Date().toISOString().slice(0,10);
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function fmtDate(ds){const d=new Date(ds+'T00:00:00'),t=new Date(),y=new Date(t);y.setDate(y.getDate()-1);if(ds===today())return'היום';if(ds===y.toISOString().slice(0,10))return'אתמול';return`יום ${HDAYS[d.getDay()]}, ${d.getDate()}/${d.getMonth()+1}`}
+async function save(){await DB.save(data)}
+
+// Scoring
+function score(e){
+  let s=0;const h=e.sleepHours;
+  if(h<5)s+=4;else if(h<6)s+=3;else if(h<7)s+=1;
+  if(h<6&&e.tired==='no')s+=2;
+  if(e.thoughtSpeed==='faster')s+=2;if(e.thoughtSpeed==='much_faster')s+=4;
+  if(e.certainty==='more_certain')s+=2;if(e.certainty==='extremely_certain')s+=4;
+  if(e.figuredOut==='maybe')s+=1;if(e.figuredOut==='yes')s+=3;
+  if(e.urgeToAct==='high')s+=2;if(e.urgeToAct==='very_high')s+=4;
+  if(e.fastDecisions==='a_little')s+=1;if(e.fastDecisions==='yes')s+=3;
+  if(e.restless==='a_little')s+=1;if(e.restless==='yes')s+=2;
+  if(e.medication==='delayed')s+=1;if(e.medication==='no')s+=3;
+  return s;
+}
+function s2state(s){if(s<=3)return'green';if(s<=7)return'yellow';if(s<=11)return'orange';return'red'}
+function bump(c,m){return SO.indexOf(m)>SO.indexOf(c)?m:c}
+function getPrev(ds,off){const d=new Date(ds+'T00:00:00');d.setDate(d.getDate()-off);return data.entries.find(e=>e.date===d.toISOString().slice(0,10))||null}
+
+function compound(e,st){
+  const h=e.sleepHours;
+  if(h<6&&e.tired==='no')st=bump(st,'yellow');
+  if(h<5&&e.thoughtSpeed==='much_faster')st=bump(st,'orange');
+  if(h<5&&e.certainty==='extremely_certain')st=bump(st,'orange');
+  if(e.medication==='no'&&h<6){const i=SO.indexOf(st);if(i<3)st=SO[i+1]}
+  const prev=getPrev(e.date,1);
+  if(prev){
+    if(prev.sleepHours<6&&h<6)st=bump(st,'yellow');
+    const tc=e.thoughtSpeed==='much_faster'||e.certainty==='extremely_certain';
+    const pc=prev.thoughtSpeed==='much_faster'||prev.certainty==='extremely_certain';
+    if(tc&&pc)st=bump(st,'orange');
+  }
+  return st;
+}
+
+// Tabs
+$$('.tab').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
+function switchTab(id){
+  $$('.tab').forEach(t=>{t.classList.toggle('active',t.dataset.tab===id);t.setAttribute('aria-selected',t.dataset.tab===id)});
+  $$('.tab-content').forEach(c=>c.classList.toggle('active',c.id===`tab-${id}`));
+  $('#tab-settings').classList.remove('active');
+  if(id==='history')renderHistory();if(id==='meds')renderMeds();
+}
+$('#settingsToggle').addEventListener('click',()=>{
+  const s=$('#tab-settings'),v=s.classList.contains('active');
+  $$('.tab-content').forEach(c=>c.classList.remove('active'));
+  if(!v){s.classList.add('active');$$('.tab').forEach(t=>{t.classList.remove('active');t.setAttribute('aria-selected','false')});loadSettings()}
+  else switchTab('check');
+});
+$('#settingsBack').addEventListener('click',()=>switchTab('check'));
+
+// Pills
+$$('.pills').forEach(g=>{g.querySelectorAll('.pill').forEach(p=>{p.addEventListener('click',()=>{g.querySelectorAll('.pill').forEach(x=>x.classList.remove('selected'));p.classList.add('selected');p.closest('.field')?.classList.remove('field-error')})})});
+
+// Sleep
+const sleepEl=$('#sleepHours');
+$$('.sleep-btn').forEach(b=>{b.addEventListener('click',()=>{let v=parseFloat(sleepEl.value)||7;sleepEl.value=Math.max(0,Math.min(12,v+parseFloat(b.dataset.delta)))})});
+
+// Submit
+$('#checkForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  let ok=true;
+  for(const f of FIELDS){const g=$(`.pills[data-field="${f}"]`);if(!g.querySelector('.pill.selected')){g.closest('.field').classList.add('field-error');if(ok)g.closest('.field').scrollIntoView({behavior:'smooth',block:'center'});ok=false}}
+  if(!ok){$('#submitBtn').classList.add('shake');setTimeout(()=>$('#submitBtn').classList.remove('shake'),300);return}
+
+  const entry={date:today(),sleepHours:parseFloat(sleepEl.value)||7};
+  FIELDS.forEach(f=>{const s=$(`.pills[data-field="${f}"] .pill.selected`);entry[f]=s?s.dataset.value:null});
+  entry.score=score(entry);entry.state=compound(entry,s2state(entry.score));
+
+  const idx=data.entries.findIndex(e=>e.date===today());
+  if(idx>=0)data.entries[idx]=entry;else data.entries.push(entry);
+  await save();showResult(entry);renderStrip();
+});
+
+// Result
+function showResult(entry){
+  const card=$('#resultCard'),form=$('#checkForm'),info=STATES[entry.state];
+  card.classList.remove('hidden');form.style.display='none';
+  const badge=$('#resultBadge');badge.className='result-badge '+entry.state;badge.textContent=info.icon;
+  $('#resultTitle').textContent=info.title;$('#resultDesc').textContent=info.desc;
+
+  const act=$('#resultActions');
+  act.innerHTML='<ul>'+ACTIONS[entry.state].map(a=>`<li>${a}</li>`).join('')+'</ul>';
+
+  if((entry.state==='orange'||entry.state==='red')&&data.settings.safetyRulesNote)
+    act.innerHTML+=`<div class="result-extra" style="background:var(--${entry.state}-bg)"><strong>הכללים שלך:</strong> ${esc(data.settings.safetyRulesNote)}</div>`;
+  if((entry.state==='orange'||entry.state==='red')&&data.settings.trustedContactName){
+    const ph=data.settings.trustedContactPhone;
+    const lk=ph?`<a href="tel:${esc(ph)}" style="color:var(--accent);font-weight:600">${esc(data.settings.trustedContactName)} — ${esc(ph)}</a>`:esc(data.settings.trustedContactName);
+    act.innerHTML+=`<div class="result-extra" style="background:var(--${entry.state}-bg)">איש קשר: ${lk}</div>`;
+  }
+
+  $('#resultScore').textContent=`ניקוד: ${entry.score}`;$('#resultDate').textContent=fmtDate(entry.date);
+  $('#updateTodayBtn').onclick=()=>{card.classList.add('hidden');form.style.display='';prefill(entry)};
+}
+
+function prefill(entry){
+  sleepEl.value=entry.sleepHours;
+  FIELDS.forEach(f=>{if(!entry[f])return;$(`.pills[data-field="${f}"]`).querySelectorAll('.pill').forEach(p=>p.classList.toggle('selected',p.dataset.value===entry[f]))});
+}
+
+// Strip
+function renderStrip(){
+  const dots=$('#weekDots'),str=$('#streakDisplay'),t=new Date();
+  let html='';
+  for(let i=6;i>=0;i--){const d=new Date(t);d.setDate(d.getDate()-i);const e=data.entries.find(x=>x.date===d.toISOString().slice(0,10));html+=`<div class="week-dot ${e?e.state:''}"></div>`}
+  dots.innerHTML=html;
+  let streak=0;for(let i=0;i<365;i++){const d=new Date(t);d.setDate(d.getDate()-i);if(data.entries.find(x=>x.date===d.toISOString().slice(0,10)))streak++;else break}
+  str.textContent=streak>0?`🔥 ${streak} ימים ברצף`:'';
+}
+
+// History
+function renderHistory(){
+  const list=$('#historyList'),empty=$('#historyEmpty');
+  const recent=[...data.entries].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,7);
+  if(!recent.length){empty.style.display='';list.innerHTML='';return}
+  empty.style.display='none';
+  list.innerHTML=recent.map((e,i)=>`
+    <div class="history-item"><div class="history-row"><span class="history-date">${fmtDate(e.date)}</span><span class="badge ${e.state}">${SB[e.state]}</span></div>
+    <div class="history-sub"><span>שינה: ${e.sleepHours}h</span><span>תרופות: ${ML[e.medication]||'—'}</span><span>ניקוד: ${e.score}</span></div>
+    <div class="history-detail" id="hd-${i}">מחשבות: ${TL[e.thoughtSpeed]||'—'}<br>ביטחון: ${CL[e.certainty]||'—'}<br>הבנה חשובה: ${e.figuredOut==='yes'?'כן':e.figuredOut==='maybe'?'אולי':'לא'}<br>דחף לפעול: ${e.urgeToAct||'—'}<br>החלטות מהירות: ${e.fastDecisions==='yes'?'כן':e.fastDecisions==='a_little'?'קצת':'לא'}<br>חוסר מנוחה: ${e.restless==='yes'?'כן':e.restless==='a_little'?'קצת':'לא'}<br>עייף: ${e.tired==='yes'?'כן':'לא'}</div></div>
+  `).join('');
+  list.querySelectorAll('.history-item').forEach(item=>item.addEventListener('click',()=>item.querySelector('.history-detail').classList.toggle('open')));
+}
+
+// Meds
+let editMedId=null;
+function renderMeds(){
+  const list=$('#medsList'),empty=$('#medsEmpty');
+  if(!data.medications.length){empty.style.display='';list.innerHTML='';return}
+  empty.style.display='none';
+  list.innerHTML=data.medications.map(m=>`
+    <div class="med-card ${m.active?'':'med-off'}"><div class="med-info" data-mid="${m.id}"><div class="med-name">${esc(m.name)}</div>${m.dosage?`<div class="med-dose">${esc(m.dosage)}</div>`:''}${m.note?`<div class="med-note">${esc(m.note)}</div>`:''}</div>
+    <div class="med-btns"><button class="toggle ${m.active?'on':''}" data-tid="${m.id}" aria-label="הפעל/כבה"></button><button class="del-btn" data-did="${m.id}" aria-label="מחק">×</button></div></div>
+  `).join('');
+
+  list.querySelectorAll('.toggle').forEach(b=>b.addEventListener('click',async ev=>{ev.stopPropagation();const m=data.medications.find(x=>x.id===b.dataset.tid);if(m){m.active=!m.active;await save();renderMeds()}}));
+  list.querySelectorAll('.del-btn').forEach(b=>b.addEventListener('click',async ev=>{ev.stopPropagation();if(confirm('למחוק תרופה זו?')){data.medications=data.medications.filter(x=>x.id!==b.dataset.did);await save();renderMeds()}}));
+  list.querySelectorAll('.med-info').forEach(el=>el.addEventListener('click',()=>{const m=data.medications.find(x=>x.id===el.dataset.mid);if(m)openMedModal(m)}));
+}
+
+function openMedModal(med){
+  editMedId=med?med.id:null;
+  $('#medModalTitle').textContent=med?'ערוך תרופה':'הוסף תרופה';
+  $('#medName').value=med?med.name:'';$('#medDosage').value=med?(med.dosage||''):'';$('#medNote').value=med?(med.note||''):'';
+  $('#medModal').classList.remove('hidden');
+}
+$('#addMedBtn').addEventListener('click',()=>openMedModal(null));
+$('#cancelMedBtn').addEventListener('click',()=>$('#medModal').classList.add('hidden'));
+$('#saveMedBtn').addEventListener('click',async()=>{
+  const name=$('#medName').value.trim();if(!name)return;
+  const obj={id:editMedId||'med_'+Date.now(),name,dosage:$('#medDosage').value.trim(),note:$('#medNote').value.trim(),active:true};
+  if(editMedId){const i=data.medications.findIndex(x=>x.id===editMedId);if(i>=0){obj.active=data.medications[i].active;data.medications[i]=obj}}
+  else data.medications.push(obj);
+  await save();renderMeds();$('#medModal').classList.add('hidden');
+});
+$('#medModal').addEventListener('click',e=>{if(e.target===$('#medModal'))$('#medModal').classList.add('hidden')});
+
+// Settings
+function loadSettings(){
+  $('#safetyRules').value=data.settings.safetyRulesNote||'';
+  $('#contactName').value=data.settings.trustedContactName||'';
+  $('#contactPhone').value=data.settings.trustedContactPhone||'';
+  $('#storageStatus').innerHTML=`${data.entries.length} רשומות שמורות`;
+}
+['safetyRules','contactName','contactPhone'].forEach(id=>{
+  $(`#${id}`).addEventListener('input',async()=>{
+    data.settings.safetyRulesNote=$('#safetyRules').value;
+    data.settings.trustedContactName=$('#contactName').value;
+    data.settings.trustedContactPhone=$('#contactPhone').value;
+    await save();
+  });
+});
+$('#resetDataBtn').addEventListener('click',async()=>{if(confirm('האם אתה בטוח? כל הנתונים יימחקו.')){if(confirm('בטוח לגמרי? אין דרך לשחזר.')){await DB.clear();data=DB.defaults();switchTab('check');init()}}});
+
+// Export/Import
+$('#exportBtn').addEventListener('click',()=>{
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`clarity-check-${today()}.json`;a.click();URL.revokeObjectURL(a.href);
+});
+$('#importInput').addEventListener('change',async e=>{
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async ev=>{try{const imp=JSON.parse(ev.target.result);if(imp.entries&&Array.isArray(imp.entries)){if(confirm(`לייבא ${imp.entries.length} רשומות? זה יחליף את כל הנתונים.`)){data=imp;await save();init()}}else alert('קובץ לא תקין.')}catch{alert('שגיאה בקריאת הקובץ.')}};
+  reader.readAsText(file);e.target.value='';
+});
+
+// Init
+function init(){
+  const t=data.entries.find(e=>e.date===today());
+  if(t)showResult(t);
+  else{$('#resultCard').classList.add('hidden');$('#checkForm').style.display='';$$('.pill').forEach(p=>p.classList.remove('selected'));sleepEl.value=7}
+  renderStrip();renderHistory();renderMeds();
+}
+init();
+
+})();
+</script>
+</body>
+</html>
