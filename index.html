@@ -27,24 +27,78 @@
   --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);
   --nav-h:72px
 }
+
+/* Light theme — warm cream with green accents */
+:root[data-theme="light"]{
+  --bg:#f5f1ea;--bg2:#ede8df;--surf:#fdfaf3;--surf2:#f3eee4;--surf3:#e8e1d3;
+  --tx:#2a2823;--tx2:#6b665b;--tx3:#9a9588;
+  --brd:#e0d9c9;--brd2:#d0c8b5;
+  --ac:#5a9b76;--ac2:#467a5d;--ac-g:rgba(90,155,118,.1);--ac-gl:rgba(90,155,118,.25);
+  --grn:#5a9b76;--grn-b:rgba(90,155,118,.12);
+  --ylw:#b8993f;--ylw-b:rgba(184,153,63,.12);
+  --orn:#b8693f;--orn-b:rgba(184,105,63,.12);
+  --red:#b8485a;--red-b:rgba(184,72,90,.12);
+}
+
+/* Auto: follow system preference unless overridden */
+@media (prefers-color-scheme:light){
+  :root:not([data-theme="dark"]):not([data-theme="light"]){
+    --bg:#f5f1ea;--bg2:#ede8df;--surf:#fdfaf3;--surf2:#f3eee4;--surf3:#e8e1d3;
+    --tx:#2a2823;--tx2:#6b665b;--tx3:#9a9588;
+    --brd:#e0d9c9;--brd2:#d0c8b5;
+    --ac:#5a9b76;--ac2:#467a5d;--ac-g:rgba(90,155,118,.1);--ac-gl:rgba(90,155,118,.25);
+    --grn:#5a9b76;--grn-b:rgba(90,155,118,.12);
+    --ylw:#b8993f;--ylw-b:rgba(184,153,63,.12);
+    --orn:#b8693f;--orn-b:rgba(184,105,63,.12);
+    --red:#b8485a;--red-b:rgba(184,72,90,.12);
+  }
+}
 html{font-size:16px;-webkit-text-size-adjust:100%}
 body{font-family:var(--font);background:var(--bg);color:var(--tx);line-height:1.5;min-height:100dvh;-webkit-font-smoothing:antialiased;overflow-x:hidden;padding-bottom:calc(var(--nav-h) + var(--sab) + 20px);text-align:right}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 25% 0%,rgba(124,196,160,.04),transparent 55%),radial-gradient(ellipse at 75% 100%,rgba(217,188,90,.03),transparent 50%);pointer-events:none;z-index:0}
 #app{max-width:480px;margin:0 auto;position:relative;z-index:1}
-.status-bar{display:flex;align-items:center;justify-content:space-between;padding:calc(var(--sat) + 8px) 20px 4px;font-size:.68rem;color:var(--tx3)}
-.status-bar-right{display:flex;gap:8px;align-items:center}
 .status-dot{width:6px;height:6px;border-radius:50%;background:var(--grn);animation:blink 3s infinite}
 @keyframes blink{0%,90%,100%{opacity:1}95%{opacity:.3}}
 
-.app-header{display:flex;align-items:center;justify-content:space-between;padding:8px 20px 14px}
-.app-header-left h1{font-family:var(--fd);font-size:1.5rem;font-weight:400;letter-spacing:-.01em}
-.app-header-left p{font-size:.78rem;color:var(--tx2);margin-top:1px}
+.status-bar{display:flex;align-items:center;justify-content:space-between;padding:calc(var(--sat) + 12px) 20px 6px;font-size:.95rem;color:var(--tx);font-weight:600;letter-spacing:.02em}
+.status-bar-right{display:flex;gap:8px;align-items:center}
+.status-bar #clock{font-family:var(--font);font-size:1rem;font-weight:600;font-variant-numeric:tabular-nums}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--grn);animation:blink 3s infinite}
+
+.top-row{display:flex;align-items:center;justify-content:space-between;padding:calc(var(--sat) + 12px) 20px 8px}
+.top-row-brand{font-family:var(--fd);font-size:1.5rem;font-weight:400;line-height:1;letter-spacing:-.01em}
+.top-row-clock{font-family:var(--font);font-size:.85rem;font-weight:600;font-variant-numeric:tabular-nums;color:var(--tx2)}
+
+.app-header{display:flex;align-items:flex-start;justify-content:space-between;padding:calc(var(--sat) + 14px) 20px 18px}
+.app-header-left h1{font-family:var(--fd);font-size:1.7rem;font-weight:400;letter-spacing:-.01em;line-height:1.1}
+.app-header-left p{font-size:1rem;color:var(--tx);margin-top:8px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.02em;line-height:1.5}
+.app-header-left h1 .greeting{font-size:.82rem;color:var(--ac);font-family:var(--font);font-weight:600;display:block;margin-bottom:6px;letter-spacing:.02em}
 .sos-btn{width:46px;height:46px;border-radius:50%;background:var(--red);border:none;color:#fff;font-weight:700;font-size:.72rem;cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--red),0 4px 16px rgba(217,96,112,.35);animation:sosPulse 2.5s infinite;font-family:var(--font);letter-spacing:.02em}
 .sos-btn:active{transform:scale(.9)}
 @keyframes sosPulse{0%,100%{box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--red),0 4px 16px rgba(217,96,112,.35)}50%{box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--red),0 4px 28px rgba(217,96,112,.65)}}
 
+.nav-item[data-s="home"] .nav-icon{stroke:#7cc4a0}
+.nav-item[data-s="home"].active{color:#7cc4a0}
+.nav-item[data-s="home"].active::before{background:#7cc4a0}
+
+.nav-item[data-s="history"] .nav-icon{stroke:#6ba8d4}
+.nav-item[data-s="history"].active{color:#6ba8d4}
+.nav-item[data-s="history"].active::before{background:#6ba8d4}
+
+.nav-item[data-s="meds"] .nav-icon{stroke:#c89cd4}
+.nav-item[data-s="meds"].active{color:#c89cd4}
+.nav-item[data-s="meds"].active::before{background:#c89cd4}
+
+.nav-item[data-s="settings"] .nav-icon{stroke:#d9bc5a}
+.nav-item[data-s="settings"].active{color:#d9bc5a}
+.nav-item[data-s="settings"].active::before{background:#d9bc5a}
+
+.nav-item.sos-nav .nav-icon{stroke:var(--red);stroke-width:2.5}
+.nav-item.sos-nav.active{color:var(--red)}
+.nav-item.sos-nav.active::before{background:var(--red)}
+
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--bg2);border-top:1px solid var(--brd);padding:6px 0 calc(var(--sab) + 6px);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
-.bottom-nav-inner{max-width:480px;margin:0 auto;display:flex;justify-content:space-around;align-items:center;flex-direction:row-reverse}
+.bottom-nav-inner{max-width:480px;margin:0 auto;display:flex;justify-content:space-around;align-items:center}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;border:none;background:none;color:var(--tx3);font-family:var(--font);font-size:.62rem;font-weight:500;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .2s;position:relative;min-width:54px}
 .nav-item.active{color:var(--ac)}
 .nav-item.active::before{content:'';position:absolute;top:-6px;width:20px;height:2px;background:var(--ac);border-radius:1px}
@@ -53,40 +107,44 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .screen{display:none;padding:0 20px 20px;animation:screenIn .3s cubic-bezier(.22,1,.36,1)}.screen.active{display:block}
 @keyframes screenIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-.state-ring-wrap{display:flex;justify-content:center;margin-bottom:20px;position:relative}
-.state-ring{position:relative;width:160px;height:160px}
+.state-ring-wrap{display:flex;justify-content:center;margin-bottom:24px;margin-top:8px;position:relative}
+.state-ring{position:relative;width:170px;height:170px}
 .state-ring svg{transform:rotate(-90deg)}
 .state-ring-bg{fill:none;stroke:var(--surf2);stroke-width:8}
 .state-ring-fg{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .8s cubic-bezier(.22,1,.36,1),stroke .4s}
 .state-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.state-ring-icon{font-size:2rem;margin-bottom:4px}
-.state-ring-label{font-family:var(--fd);font-size:1.15rem}
-.state-ring-score{font-size:.72rem;color:var(--tx3);margin-top:2px}
+.state-ring-icon{font-size:2.2rem;margin-bottom:6px}
+.state-ring-label{font-family:var(--fd);font-size:1.2rem}
+.state-ring-score{font-size:.72rem;color:var(--tx3);margin-top:4px}
 .trend-pill{position:absolute;top:8px;right:50%;transform:translateX(80px);background:var(--surf);border:1px solid var(--brd);border-radius:20px;padding:5px 10px;font-size:.7rem;color:var(--tx2);display:flex;align-items:center;gap:4px;font-weight:600}
 .trend-pill.rising{color:var(--orn);border-color:rgba(217,142,90,.3)}
 .trend-pill.escalating{color:var(--red);border-color:rgba(217,96,112,.3)}
 .trend-pill.improving{color:var(--grn);border-color:rgba(124,196,160,.3)}
 .trend-arrow{font-size:.85rem}
 
-.quick-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;direction:rtl}
-.q-stat{background:var(--surf);border:1px solid var(--brd);border-radius:var(--rs);padding:12px;text-align:center}
-.q-stat-val{font-size:1.1rem;font-weight:700;margin-bottom:2px}
-.q-stat-label{font-size:.65rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em}
+.quick-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px;direction:rtl}
+.q-stat{background:var(--surf);border:1px solid var(--brd);border-radius:var(--rs);padding:14px 10px;text-align:center;transition:transform .15s}
+.q-stat:active{transform:scale(.98)}
+.q-stat-val{font-size:1.25rem;font-weight:700;margin-bottom:4px;font-family:var(--fd);font-weight:400}
+.q-stat-label{font-size:.62rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
 
-.week-section{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:16px 16px 14px;margin-bottom:16px}
+.week-section{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:18px 16px 16px;margin-bottom:18px}
 .week-section-title{font-size:.72rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;font-weight:600;text-align:right}
-.week-bars{display:flex;align-items:flex-end;gap:8px;height:60px;flex-direction:row-reverse}
-.w-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
-.w-bar{width:100%;border-radius:6px 6px 3px 3px;transition:height .5s cubic-bezier(.22,1,.36,1);min-height:4px}
-.w-bar.grn{background:linear-gradient(to top,var(--grn),rgba(124,196,160,.5))}.w-bar.ylw{background:linear-gradient(to top,var(--ylw),rgba(217,188,90,.5))}.w-bar.orn{background:linear-gradient(to top,var(--orn),rgba(217,142,90,.5))}.w-bar.red{background:linear-gradient(to top,var(--red),rgba(217,96,112,.5))}
-.w-bar.empty{background:var(--brd);height:4px}
-.w-day{font-size:.65rem;color:var(--tx3);font-weight:500}
+.week-cells{display:flex;gap:7px}
+.w-cell{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;min-width:0}
+.w-square{width:100%;aspect-ratio:1;max-width:44px;border-radius:10px;background:var(--bg2);border:1px solid var(--brd);display:grid;place-items:center;font-size:.65rem;color:var(--tx3);font-weight:600;line-height:1}
+.w-square.grn{background:var(--grn);border-color:var(--grn);color:var(--bg)}
+.w-square.ylw{background:var(--ylw);border-color:var(--ylw);color:var(--bg)}
+.w-square.orn{background:var(--orn);border-color:var(--orn);color:var(--bg)}
+.w-square.red{background:var(--red);border-color:var(--red);color:#fff}
+.w-square.today{box-shadow:0 0 0 2px var(--ac)}
+.w-cell-day{font-size:.66rem;color:var(--tx3);font-weight:600}
 
-.action-card{background:linear-gradient(135deg,var(--ac) 0%,var(--ac2) 100%);border-radius:var(--r);padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s;box-shadow:0 4px 24px rgba(124,196,160,.2)}
+.action-card{background:linear-gradient(135deg,var(--ac) 0%,var(--ac2) 100%);border-radius:var(--r);padding:20px 22px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s;box-shadow:0 6px 28px rgba(124,196,160,.25)}
 .action-card:active{transform:scale(.97)}
-.action-card-text{color:var(--bg);font-size:.88rem;font-weight:600}
-.action-card-sub{color:rgba(17,16,21,.5);font-size:.75rem;font-weight:400;margin-top:2px}
-.action-card-arrow{color:var(--bg);font-size:1.2rem;opacity:.7}
+.action-card-text{color:var(--bg);font-size:.95rem;font-weight:700}
+.action-card-sub{color:rgba(17,16,21,.55);font-size:.74rem;font-weight:500;margin-top:3px}
+.action-card-arrow{color:var(--bg);font-size:1.4rem;opacity:.75}
 
 .missed-banner{background:var(--red-b);border:1px solid rgba(217,96,112,.3);border-radius:var(--r);padding:18px;margin-bottom:16px;display:none;animation:screenIn .3s ease}
 .missed-banner.show{display:block}
@@ -97,7 +155,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .missed-action{display:block;width:100%;padding:13px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);font-family:var(--font);font-size:.86rem;font-weight:600;text-decoration:none;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .missed-action:active{transform:scale(.97)}
 
-.check-progress{display:flex;flex-direction:row-reverse;gap:4px;padding:0 0 16px}
+.check-progress{display:flex;gap:4px;padding:0 0 16px}
 .check-dot{flex:1;height:3px;border-radius:2px;background:var(--brd);transition:background .3s}
 .check-dot.done{background:var(--ac)}
 .check-dot.current{background:var(--ac);animation:dotPulse 1s infinite}
@@ -213,6 +271,55 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .tag-x{background:none;border:none;color:var(--red);font-size:.85rem;cursor:pointer;padding:0 2px}
 .add-row{display:flex;gap:6px;margin-top:8px;flex-direction:row-reverse}.add-row .input{flex:1}.add-row button{padding:10px 16px;border:none;background:var(--ac);color:var(--bg);border-radius:var(--rs);font-family:var(--font);font-size:.82rem;font-weight:600;cursor:pointer}
 
+.onboard-overlay{position:fixed;inset:0;background:rgba(11,10,15,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;z-index:500;padding:24px;animation:fadeIn .4s}.onboard-overlay.hidden{display:none}
+.onboard-box{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:36px 28px;max-width:380px;width:100%;text-align:center;animation:heroIn .5s cubic-bezier(.22,1,.36,1)}
+.onboard-logo{font-family:var(--fd);font-size:2rem;margin-bottom:8px;background:linear-gradient(135deg,var(--ac),var(--ac2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.onboard-box p{font-size:.88rem;color:var(--tx2);line-height:1.6;margin-bottom:22px}
+.onboard-box .input{margin-bottom:14px;text-align:center;font-size:1rem}
+
+.app-header-left h1 .greeting{display:none}
+
+.week-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.week-section-title{font-size:.72rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;font-weight:600;text-align:right;margin-bottom:0}
+.expand-cal{background:transparent;border:1px solid var(--brd);color:var(--tx2);font-family:var(--font);font-size:.7rem;font-weight:600;padding:5px 11px;border-radius:var(--rs);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.expand-cal:active{transform:scale(.95)}
+
+.cal-overlay{position:fixed;inset:0;background:rgba(11,10,15,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;z-index:300;padding:20px;padding-top:max(20px,calc(var(--sat) + 30px));padding-bottom:calc(var(--sab) + 20px);animation:fadeIn .25s}
+.cal-overlay.hidden{display:none}
+.cal-modal{background:var(--surf);border:1px solid var(--brd);width:100%;max-width:440px;border-radius:var(--r);padding:22px 18px;animation:modalIn .3s cubic-bezier(.22,1,.36,1);max-height:calc(100dvh - 80px);overflow-y:auto}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.cal-nav-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--brd);background:var(--bg2);color:var(--tx);font-size:1.1rem;cursor:pointer;display:grid;place-items:center;-webkit-tap-highlight-color:transparent;font-family:var(--font)}
+.cal-nav-btn:active{background:var(--surf2);transform:scale(.92)}
+.cal-nav-btn:disabled{opacity:.3;cursor:not-allowed}
+.cal-month-title{font-family:var(--fd);font-size:1.2rem;font-weight:400}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;direction:rtl}
+.cal-day-header{font-size:.62rem;color:var(--tx3);text-align:center;font-weight:600;padding:4px 0;text-transform:uppercase;letter-spacing:.04em}
+.cal-cell{aspect-ratio:1;border-radius:8px;background:var(--bg2);border:1px solid var(--brd);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.78rem;font-weight:600;color:var(--tx3);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .1s;padding:2px}
+.cal-cell:active{transform:scale(.92)}
+.cal-cell.empty-day{visibility:hidden}
+.cal-cell.has-entry{cursor:pointer}
+.cal-cell.grn{background:var(--grn);border-color:var(--grn);color:var(--bg)}
+.cal-cell.ylw{background:var(--ylw);border-color:var(--ylw);color:var(--bg)}
+.cal-cell.orn{background:var(--orn);border-color:var(--orn);color:var(--bg)}
+.cal-cell.red{background:var(--red);border-color:var(--red);color:#fff}
+.cal-cell.today{box-shadow:0 0 0 2px var(--ac)}
+.cal-close{margin-top:18px;width:100%;padding:13px;background:var(--surf2);color:var(--tx);border:1px solid var(--brd);border-radius:var(--rs);font-family:var(--font);font-size:.86rem;font-weight:600;cursor:pointer}
+.cal-legend{display:flex;gap:12px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.cal-leg-item{display:flex;align-items:center;gap:5px;font-size:.7rem;color:var(--tx2)}
+.cal-leg-dot{width:10px;height:10px;border-radius:3px}
+.cal-leg-dot.grn{background:var(--grn)}.cal-leg-dot.ylw{background:var(--ylw)}.cal-leg-dot.orn{background:var(--orn)}.cal-leg-dot.red{background:var(--red)}
+
+.joke-card{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:16px 18px;margin-bottom:12px;display:flex;align-items:flex-start;gap:12px}
+.joke-icon{font-size:1.4rem;flex-shrink:0;line-height:1.3}
+.joke-content{flex:1}
+.joke-label{font-size:.62rem;color:var(--ac);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:5px}
+.joke-text{font-size:.84rem;color:var(--tx);line-height:1.55}
+
+.theme-picker{display:flex;gap:6px}
+.theme-opt{flex:1;padding:11px 8px;border:1.5px solid var(--brd);border-radius:var(--rs);background:var(--bg2);color:var(--tx2);font-family:var(--font);font-size:.8rem;font-weight:500;cursor:pointer;text-align:center;-webkit-tap-highlight-color:transparent;transition:all .2s}
+.theme-opt:active{transform:scale(.95)}
+.theme-opt.selected{background:var(--ac);color:var(--bg);border-color:var(--ac);font-weight:600}
+
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}.shake{animation:shake .3s}
 .hidden{display:none!important}
 @media screen and (max-width:768px){input[type="text"],input[type="tel"],input[type="number"],textarea,select{font-size:16px}}
@@ -220,11 +327,16 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 </head>
 <body>
 <div id="app">
-  <div class="status-bar"><span id="clock"></span><div class="status-bar-right"><span>local</span><div class="status-dot"></div></div></div>
+  <!-- Onboarding modal -->
+  <div class="onboard-overlay hidden" id="onbMod"><div class="onboard-box">
+    <div class="onboard-logo">Clarity</div>
+    <p>ברוך הבא. איך תרצה שאקרא לך?</p>
+    <input type="text" id="onbName" class="input" placeholder="השם שלך" maxlength="20">
+    <button class="btn btn-primary" id="onbSave">המשך</button>
+  </div></div>
 
   <div class="app-header">
-    <div class="app-header-left"><h1>Clarity</h1><p id="headerDate"></p></div>
-    <button class="sos-btn" id="sosBtn">SOS</button>
+    <div class="app-header-left"><h1 id="appH"><span class="greeting" id="greetEl"></span>Clarity</h1><p id="headerDate"></p></div>
   </div>
 
   <div class="sos-overlay hidden" id="sosMod"><div class="sos-box">
@@ -236,6 +348,23 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   </div></div>
 
   <div class="hard-stop hidden" id="hs"><div class="hs-box"><div class="hs-i" id="hsI">⏸</div><h2 id="hsT">עצור רגע.</h2><p id="hsP"></p><div class="hs-btns"><button class="btn btn-primary" id="hsF">פעל לפי הכללים שלך</button><button class="btn btn-muted" id="hsC">המשך בכל זאת</button></div></div></div>
+
+  <!-- Calendar -->
+  <div class="cal-overlay hidden" id="calMod"><div class="cal-modal">
+    <div class="cal-header">
+      <button class="cal-nav-btn" id="calPrev">‹</button>
+      <div class="cal-month-title" id="calTitle"></div>
+      <button class="cal-nav-btn" id="calNext">›</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="cal-legend">
+      <div class="cal-leg-item"><div class="cal-leg-dot grn"></div>יציב</div>
+      <div class="cal-leg-item"><div class="cal-leg-dot ylw"></div>שינוי</div>
+      <div class="cal-leg-item"><div class="cal-leg-dot orn"></div>סיכון</div>
+      <div class="cal-leg-item"><div class="cal-leg-dot red"></div>התראה</div>
+    </div>
+    <button class="cal-close" id="calClose">סגור</button>
+  </div></div>
 
   <!-- HOME -->
   <div class="screen active" id="s-home">
@@ -279,13 +408,24 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       </div>
 
       <div class="week-section">
-        <div class="week-section-title">שבוע אחרון</div>
-        <div class="week-bars" id="wBars"></div>
+        <div class="week-section-header">
+          <div class="week-section-title">השבוע הנוכחי</div>
+          <button class="expand-cal" id="openCal">לוח חודשי</button>
+        </div>
+        <div class="week-cells" id="wCells"></div>
       </div>
 
       <div class="action-card" id="startCheck">
-        <div><div class="action-card-text" id="actionTxt">התחל בדיקה יומית</div><div class="action-card-sub">30–60 שניות</div></div>
+        <div><div class="action-card-text" id="actionTxt">מעקב יומי</div></div>
         <div class="action-card-arrow">←</div>
+      </div>
+
+      <div class="joke-card" id="jokeCard">
+        <div class="joke-icon">😄</div>
+        <div class="joke-content">
+          <div class="joke-label">הבדיחה היומית</div>
+          <div class="joke-text" id="jokeText"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -338,6 +478,14 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <!-- SETTINGS -->
   <div class="screen" id="s-settings">
     <div class="section-header"><div class="section-title">הגדרות</div></div>
+    <section class="card"><h3 class="card-label">השם שלי</h3><input type="text" id="userName" class="input" placeholder="השם שלך" maxlength="20"></section>
+    <section class="card"><h3 class="card-label">מצב תצוגה</h3>
+      <div class="theme-picker">
+        <button type="button" class="theme-opt" data-theme="auto">אוטומטי</button>
+        <button type="button" class="theme-opt" data-theme="light">בהיר</button>
+        <button type="button" class="theme-opt" data-theme="dark">כהה</button>
+      </div>
+    </section>
     <section class="card"><h3 class="card-label">כללי בטיחות</h3><textarea id="sR" class="textarea" rows="3" placeholder="למשל: בכתום — לא החלטות כספיות 48 שעות"></textarea></section>
     <section class="card"><h3 class="card-label">הסימנים המוקדמים שלי</h3><p style="font-size:.78rem;color:var(--tx3);margin-bottom:8px">יוצגו כשיש סיכון.</p><div id="sigC" class="tags"></div><div class="add-row"><input type="text" id="nSig" class="input" placeholder="חשיבה מהירה"><button id="aSig">+</button></div></section>
     <section class="card"><h3 class="card-label">איש קשר מהימן</h3><div class="field"><label class="field-label">שם</label><input type="text" id="cN" class="input"></div><div class="field"><label class="field-label">טלפון</label><input type="tel" id="cP" class="input"></div><div class="field"><label class="field-label">הודעה מוכנה</label><textarea id="smsT" class="textarea" rows="2" placeholder="היי, יכול להיות שאני קצת לא בכיוון. אפשר לדבר?"></textarea></div></section>
@@ -350,24 +498,33 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <button class="nav-item" data-s="history"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>היסטוריה</span></button>
   <button class="nav-item" data-s="meds"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="6" y1="12" x2="18" y2="12"/></svg><span>תרופות</span></button>
   <button class="nav-item" data-s="settings"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>הגדרות</span></button>
+  <button class="nav-item sos-nav" id="sosBtn"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>SOS</span></button>
 </div></nav>
 
 <script>
 const DB=(()=>{const N='ClarityDB',S='d',K='m',L='cc_d';let _d=null,_o=true;
-function df(){return{entries:[],settings:{trustedContactName:'',trustedContactPhone:'',safetyRulesNote:'',smsTemplate:'היי, יכול להיות שאני קצת לא בכיוון. אפשר לדבר?',earlySigns:[]},medications:[]}}
+function df(){return{entries:[],settings:{userName:'',theme:'auto',trustedContactName:'',trustedContactPhone:'',safetyRulesNote:'',smsTemplate:'היי, יכול להיות שאני קצת לא בכיוון. אפשר לדבר?',earlySigns:[]},medications:[]}}
 function op(){return new Promise((r,j)=>{if(_d)return r(_d);try{const q=indexedDB.open(N,1);q.onupgradeneeded=e=>{if(!e.target.result.objectStoreNames.contains(S))e.target.result.createObjectStore(S)};q.onsuccess=e=>{_d=e.target.result;r(_d)};q.onerror=()=>{_o=false;j()}}catch{_o=false;j()}})}
 function iG(){return op().then(db=>new Promise((r,j)=>{const q=db.transaction(S,'readonly').objectStore(S).get(K);q.onsuccess=()=>r(q.result||null);q.onerror=()=>j()}))}
 function iS(d){return op().then(db=>new Promise((r,j)=>{const q=db.transaction(S,'readwrite').objectStore(S).put(d,K);q.onsuccess=()=>r();q.onerror=()=>j()}))}
 function lG(){try{const r=localStorage.getItem(L);return r?JSON.parse(r):null}catch{return null}}
 function lS(d){try{localStorage.setItem(L,JSON.stringify(d))}catch{}}
 async function load(){let d=null;if(_o)try{d=await iG()}catch{_o=false};if(!d)d=lG();if(d&&_o)try{if(!await iG().catch(()=>null))await iS(d)}catch{};
-if(d){if(!d.settings)d.settings=df().settings;if(!d.settings.smsTemplate)d.settings.smsTemplate=df().settings.smsTemplate;if(!d.settings.earlySigns)d.settings.earlySigns=[]}return d||df()}
+if(d){if(!d.settings)d.settings=df().settings;if(!d.settings.smsTemplate)d.settings.smsTemplate=df().settings.smsTemplate;if(!d.settings.earlySigns)d.settings.earlySigns=[];if(d.settings.userName===undefined)d.settings.userName='';if(!d.settings.theme)d.settings.theme='auto'}return d||df()}
 async function save(d){lS(d);if(_o)try{await iS(d)}catch{}}
 async function clear(){localStorage.removeItem(L);if(_o)try{(await op()).transaction(S,'readwrite').objectStore(S).delete(K)}catch{}}
 return{load,save,clear,df}})();
 
 (async()=>{
 let D=await DB.load();
+
+// Apply theme immediately
+function applyTheme(t){
+  if(t==='light')document.documentElement.setAttribute('data-theme','light');
+  else if(t==='dark')document.documentElement.setAttribute('data-theme','dark');
+  else document.documentElement.removeAttribute('data-theme');
+}
+applyTheme(D.settings.theme||'auto');
 const SI={green:{t:'יציב',d:'אין שום דבר חריג היום.',i:'✓'},yellow:{t:'שינוי מוקדם',d:'יש שינויים שכדאי לשים לב אליהם.',i:'⚠'},orange:{t:'סיכון עולה',d:'כמה סימנים מופיעים יחד. לא יום להחלטות.',i:'▲'},red:{t:'התראה גבוהה',d:'צבר חזק של סימנים. פעל לפי השלבים שלך.',i:'●'}};
 const AC={green:['המשך כרגיל','שמור שגרה','בדוק מחר'],yellow:['הימנע מהחלטות גדולות 24h','הפחת גירויים','תעדף שינה','הימנע מקפאין'],orange:['לא החלטות כספיות/משנות חיים','דחה התחייבויות','פנה לאדם מהימן','ערב שקט','בדוק תרופות'],red:['לא החלטות חשובות','צור קשר עם מהימן עכשיו','שגרה פשוטה','אם מחוץ לשליטה — תמיכה מקצועית']};
 const SO=['green','yellow','orange','red'],FL=['tired','thoughtSpeed','certainty','figuredOut','noAdvice','urgeToAct','brakes','fastDecisions','multiInit','restless','medication'];
@@ -378,10 +535,21 @@ function esc(s){const d=document.createElement('div');d.textContent=s;return d.i
 function fmt(ds){const d=new Date(ds+'T00:00:00'),t=new Date(),y=new Date(t);y.setDate(y.getDate()-1);if(ds===td())return'היום';if(ds===y.toISOString().slice(0,10))return'אתמול';return`${DYL[d.getDay()]}, ${d.getDate()}/${d.getMonth()+1}`}
 async function sv(){await DB.save(D)}
 
-function updClock(){const n=new Date();$('#clock').textContent=n.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})}
-setInterval(updClock,10000);updClock();
-function updHeader(){const n=new Date();$('#headerDate').textContent=n.toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'long'})}
-updHeader();
+function updHeader(){const n=new Date();const months=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];$('#headerDate').innerHTML=`שעה: ${n.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})}<br>חודש: ${months[n.getMonth()]}`}
+setInterval(updHeader,10000);updHeader();
+function updGreeting(){
+  const nm=D.settings.userName;
+  const h=new Date().getHours();
+  let g='';
+  if(nm){
+    if(h<12)g=`בוקר טוב, ${nm}`;
+    else if(h<18)g=`צהריים טובים, ${nm}`;
+    else if(h<22)g=`ערב טוב, ${nm}`;
+    else g=`לילה טוב, ${nm}`;
+  }
+  $('#greetEl').textContent=g;
+}
+updGreeting();
 
 function sc(e){let s=0;const h=e.sleepHours;
   if(h<5)s+=4;else if(h<6)s+=3;else if(h<7)s+=1;
@@ -455,16 +623,49 @@ $('#sosBtn').addEventListener('click',()=>{
 $('#sosClose').addEventListener('click',()=>$('#sosMod').classList.add('hidden'));
 $('#sosMod').addEventListener('click',e=>{if(e.target===$('#sosMod'))$('#sosMod').classList.add('hidden')});
 
+// Calendar
+const MONTHS=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+const CDH=['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'];
+let calY=new Date().getFullYear(),calM=new Date().getMonth();
+function rCal(){
+  $('#calTitle').textContent=`${MONTHS[calM]} ${calY}`;
+  const grid=$('#calGrid');
+  let h=CDH.map(d=>`<div class="cal-day-header">${d}</div>`).join('');
+  const first=new Date(calY,calM,1);
+  const startDay=first.getDay();
+  const daysInMonth=new Date(calY,calM+1,0).getDate();
+  const tds=td();
+  for(let i=0;i<startDay;i++)h+='<div class="cal-cell empty-day"></div>';
+  for(let day=1;day<=daysInMonth;day++){
+    const ds=`${calY}-${String(calM+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const e=D.entries.find(x=>x.date===ds);
+    const isToday=ds===tds;
+    let cls='cal-cell';
+    if(e){const c=e.state==='green'?'grn':e.state==='yellow'?'ylw':e.state==='orange'?'orn':'red';cls+=' '+c+' has-entry'}
+    if(isToday)cls+=' today';
+    h+=`<div class="${cls}" data-d="${ds}">${day}</div>`;
+  }
+  grid.innerHTML=h;
+  // Disable next button if next month is in future
+  const now=new Date();
+  $('#calNext').disabled=(calY>now.getFullYear()||(calY===now.getFullYear()&&calM>=now.getMonth()));
+}
+$('#openCal').addEventListener('click',()=>{calY=new Date().getFullYear();calM=new Date().getMonth();rCal();$('#calMod').classList.remove('hidden')});
+$('#calClose').addEventListener('click',()=>$('#calMod').classList.add('hidden'));
+$('#calMod').addEventListener('click',e=>{if(e.target===$('#calMod'))$('#calMod').classList.add('hidden')});
+$('#calPrev').addEventListener('click',()=>{calM--;if(calM<0){calM=11;calY--}rCal()});
+$('#calNext').addEventListener('click',()=>{const now=new Date();if(calY>now.getFullYear()||(calY===now.getFullYear()&&calM>=now.getMonth()))return;calM++;if(calM>11){calM=0;calY++}rCal()});
+
 $$('.pills').forEach(g=>{g.querySelectorAll('.pill').forEach(p=>{p.addEventListener('click',()=>{g.querySelectorAll('.pill').forEach(x=>x.classList.remove('selected'));p.classList.add('selected');p.closest('.field')?.classList.remove('field-error');updProg()})})});
 const slE=$('#sleepH');$$('.sleep-btn').forEach(b=>{b.addEventListener('click',()=>{let v=parseFloat(slE.value)||7;slE.value=Math.max(0,Math.min(12,v+parseFloat(b.dataset.d)))})});
 
 function updProg(){const total=FL.length;let done=0;FL.forEach(f=>{if($(`.pills[data-field="${f}"] .pill.selected`))done++});const prog=$('#checkProg');prog.innerHTML='';for(let i=0;i<total;i++){const dot=document.createElement('div');dot.className='check-dot'+(i<done?' done':'')+(i===done?' current':'');prog.appendChild(dot)}}
 
-$('#checkForm').addEventListener('submit',async ev=>{ev.preventDefault();let ok=true;for(const f of FL){const g=$(`.pills[data-field="${f}"]`);if(!g.querySelector('.pill.selected')){g.closest('.field').classList.add('field-error');if(ok)g.closest('.field').scrollIntoView({behavior:'smooth',block:'center'});ok=false}}if(!ok){$('#submitBtn').classList.add('shake');setTimeout(()=>$('#submitBtn').classList.remove('shake'),300);return}
+$('#checkForm').addEventListener('submit',async ev=>{ev.preventDefault();try{let ok=true;for(const f of FL){const g=$(`.pills[data-field="${f}"]`);if(!g.querySelector('.pill.selected')){g.closest('.field').classList.add('field-error');if(ok)g.closest('.field').scrollIntoView({behavior:'smooth',block:'center'});ok=false}}if(!ok){$('#submitBtn').classList.add('shake');setTimeout(()=>$('#submitBtn').classList.remove('shake'),300);return}
 const en={date:td(),sleepHours:parseFloat(slE.value)||7};FL.forEach(f=>{const s=$(`.pills[data-field="${f}"] .pill.selected`);en[f]=s?s.dataset.value:null});en.score=sc(en);en.state=cmp(en,s2s(en.score));
 const ix=D.entries.findIndex(e=>e.date===td());if(ix>=0)D.entries[ix]=en;else D.entries.push(en);await sv();
 chkMissed();
-if(en.state==='orange'||en.state==='red')showHS(en);else{go('home');showDash(en)}});
+if(en.state==='orange'||en.state==='red')showHS(en);else{go('home');showDash(en)}}catch(err){alert('שגיאה: '+err.message+'\n'+err.stack)}});
 
 let pending=null;
 function showHS(en){pending=en;$('#hs').classList.remove('hidden');if(en.state==='red'){$('#hsI').textContent='⛔';$('#hsT').textContent='עצור.';$('#hsP').innerHTML='רמת סיכון גבוהה.<br>אל תקבל החלטות.'}else{$('#hsI').textContent='⏸';$('#hsT').textContent='עצור רגע.';$('#hsP').innerHTML='סיכון מוגבר היום.<br>לא זמן להחלטות חשובות.'}}
@@ -541,11 +742,12 @@ function showDash(en){
 
 $('#dBtn').addEventListener('click',()=>{const tm=new Date();tm.setDate(tm.getDate()+1);tm.setHours(9,0,0,0);if(confirm('תזכורת ליומן מחר 9:00?')){const dt=tm.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';const ics=`BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:${dt}\nDTEND:${dt}\nSUMMARY:בדוק לפני החלטה\nBEGIN:VALARM\nTRIGGER:-PT0M\nACTION:DISPLAY\nDESCRIPTION:Clarity\nEND:VALARM\nEND:VEVENT\nEND:VCALENDAR`;const b=new Blob([ics],{type:'text/calendar'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='reminder.ics';a.click()}});
 
-function rWeek(){const bars=$('#wBars'),t=new Date();const sm={green:16,yellow:32,orange:48,red:64};let h='';
-// Build Sun..Sat columns for current week (RTL: Sun on right)
-for(let i=0;i<7;i++){const d=new Date(t);d.setDate(d.getDate()-i);const ds=d.toISOString().slice(0,10),e=D.entries.find(x=>x.date===ds),dy=DY[d.getDay()];
-if(e){const cls=e.state==='green'?'grn':e.state==='yellow'?'ylw':e.state==='orange'?'orn':'red';h+=`<div class="w-col"><div class="w-bar ${cls}" style="height:${sm[e.state]}px"></div><span class="w-day">${dy}</span></div>`}
-else h+=`<div class="w-col"><div class="w-bar empty"></div><span class="w-day">${dy}</span></div>`}bars.innerHTML=h}
+function rWeek(){const cells=$('#wCells'),t=new Date(),tds=td();
+const sunday=new Date(t);sunday.setDate(t.getDate()-t.getDay());
+let h='';
+for(let i=0;i<7;i++){const d=new Date(sunday);d.setDate(sunday.getDate()+i);const ds=d.toISOString().slice(0,10),e=D.entries.find(x=>x.date===ds),dy=DY[d.getDay()],isToday=ds===tds;const lbl=`${d.getDate()}.${d.getMonth()+1}`;
+if(e){const cls=e.state==='green'?'grn':e.state==='yellow'?'ylw':e.state==='orange'?'orn':'red';h+=`<div class="w-cell"><div class="w-square ${cls}${isToday?' today':''}">${lbl}</div><span class="w-cell-day">${dy}</span></div>`}
+else h+=`<div class="w-cell"><div class="w-square${isToday?' today':''}">${lbl}</div><span class="w-cell-day">${dy}</span></div>`}cells.innerHTML=h}
 
 function chkMissed(){const b=$('#missedB'),m=missed();
 if(m>=2){
@@ -577,19 +779,146 @@ $('#addMed').addEventListener('click',()=>oM(null));$('#canMed').addEventListene
 $('#saveMed').addEventListener('click',async()=>{const n=$('#mN').value.trim();if(!n)return;const o={id:emId||'m'+Date.now(),name:n,dosage:$('#mD').value.trim(),note:$('#mNo').value.trim(),active:true};if(emId){const i=D.medications.findIndex(x=>x.id===emId);if(i>=0){o.active=D.medications[i].active;D.medications[i]=o}}else D.medications.push(o);await sv();rMeds();$('#medMod').classList.add('hidden')});
 $('#medMod').addEventListener('click',e=>{if(e.target===$('#medMod'))$('#medMod').classList.add('hidden')});
 
-function ldSet(){$('#sR').value=D.settings.safetyRulesNote||'';$('#cN').value=D.settings.trustedContactName||'';$('#cP').value=D.settings.trustedContactPhone||'';$('#smsT').value=D.settings.smsTemplate||'';rSig();$('#stSt').innerHTML=`${D.entries.length} רשומות`}
-['sR','cN','cP','smsT'].forEach(id=>{$(`#${id}`).addEventListener('input',async()=>{D.settings.safetyRulesNote=$('#sR').value;D.settings.trustedContactName=$('#cN').value;D.settings.trustedContactPhone=$('#cP').value;D.settings.smsTemplate=$('#smsT').value;await sv()})});
+function ldSet(){$('#userName').value=D.settings.userName||'';$('#sR').value=D.settings.safetyRulesNote||'';$('#cN').value=D.settings.trustedContactName||'';$('#cP').value=D.settings.trustedContactPhone||'';$('#smsT').value=D.settings.smsTemplate||'';rSig();$('#stSt').innerHTML=`${D.entries.length} רשומות`;
+  // Theme picker selection
+  const cur=D.settings.theme||'auto';
+  $$('.theme-opt').forEach(b=>b.classList.toggle('selected',b.dataset.theme===cur));
+}
+$$('.theme-opt').forEach(b=>b.addEventListener('click',async()=>{
+  const t=b.dataset.theme;
+  D.settings.theme=t;
+  await sv();
+  applyTheme(t);
+  $$('.theme-opt').forEach(x=>x.classList.toggle('selected',x===b));
+}));
+['userName','sR','cN','cP','smsT'].forEach(id=>{$(`#${id}`).addEventListener('input',async()=>{D.settings.userName=$('#userName').value.trim();D.settings.safetyRulesNote=$('#sR').value;D.settings.trustedContactName=$('#cN').value;D.settings.trustedContactPhone=$('#cP').value;D.settings.smsTemplate=$('#smsT').value;await sv();updGreeting()})});
 function rSig(){const c=$('#sigC'),s=D.settings.earlySigns||[];c.innerHTML=s.map((x,i)=>`<span class="tag">${esc(x)}<button class="tag-x" data-i="${i}">×</button></span>`).join('');c.querySelectorAll('.tag-x').forEach(b=>b.addEventListener('click',async()=>{D.settings.earlySigns.splice(+b.dataset.i,1);await sv();rSig()}))}
 $('#aSig').addEventListener('click',async()=>{const inp=$('#nSig'),v=inp.value.trim();if(!v)return;if(!D.settings.earlySigns)D.settings.earlySigns=[];D.settings.earlySigns.push(v);inp.value='';await sv();rSig()});
 $('#rstBtn').addEventListener('click',async()=>{if(confirm('למחוק הכל?')){if(confirm('בטוח?')){await DB.clear();D=DB.df();go('home');init()}}});
 $('#expBtn').addEventListener('click',()=>{const b=new Blob([JSON.stringify(D,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`clarity-${td()}.json`;a.click()});
 $('#impIn').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=async ev=>{try{const im=JSON.parse(ev.target.result);if(im.entries){if(confirm(`ייבוא ${im.entries.length} רשומות?`)){D=im;if(!D.settings.earlySigns)D.settings.earlySigns=[];if(!D.settings.smsTemplate)D.settings.smsTemplate='';await sv();init()}}else alert('לא תקין')}catch{alert('שגיאה')}};r.readAsText(f);e.target.value=''});
 
+$('#onbSave').addEventListener('click',async()=>{
+  const v=$('#onbName').value.trim();
+  if(v){D.settings.userName=v;await sv();updGreeting()}
+  $('#onbMod').classList.add('hidden');
+});
+$('#onbName').addEventListener('keydown',e=>{if(e.key==='Enter')$('#onbSave').click()});
+
 function init(){
+  // Show onboarding if no name set
+  if(!D.settings.userName){$('#onbMod').classList.remove('hidden');setTimeout(()=>$('#onbName').focus(),300)}
   const t=D.entries.find(e=>e.date===td());
   if(t)showDash(t);
-  else{$('#resultHero').classList.add('hidden');$('#ringWrap').style.display='none';$('#qStats').style.display='none';$('#actionTxt').textContent='התחל בדיקה יומית';$$('.pill').forEach(p=>p.classList.remove('selected'));slE.value=7}
-  rWeek();rHist();rMeds();chkMissed()}
+  else{$('#resultHero').classList.add('hidden');$('#ringWrap').style.display='none';$('#qStats').style.display='none';$('#actionTxt').textContent='מעקב יומי';$$('.pill').forEach(p=>p.classList.remove('selected'));slE.value=7}
+  rWeek();rHist();rMeds();chkMissed();showJoke()}
+
+const JOKES=[
+"סוס מתיישב בבר ומזמין קולה, הברמן שואל אותו: 'עם קש?'. משיב הסוס: עם הרבה קש.",
+"נקניקיה וסטייק רבים מי יותר עשיר, פתאום נכנס בשר טחון.",
+"למה חלב לא יכול לשחק כדורגל? כי הוא מחמיץ.",
+"תמיד כשאומרים לי שאני כוכב אני מאדים, ובצדק.",
+"יש לי המון בדיחות על אבטלה, אבל אף אחת מהן לא עובדת.",
+"אם תקני ציוד, אז רק ציוד תקני.",
+"ראיתי בחנות כלי בית סכין מריחה – מדהים איך הטכנולוגיה כיום מאפשרת לסכינים להריח.",
+"למה עצים לא הולכים לבית ספר? כי הם מפחדים מהחטיבה.",
+"סוכן ביטוח בודק כל לילה שהילדים שלו מכוסים?",
+"שמשון לא אהב את הדייסה שהכינה אשתו. היא הייתה דלילה.",
+"מה אמרה כוס התה לביסקוויט שנטבל והתפורר בתוכה? 'היית לי כעך'.",
+"וייטנאמית מטפחת את הגינה בשביל הנוי?",
+"ישו נכנס לבר. הברמן שואל: 'מה תשתה?'. ישו: 'נראה לי שאלך על מים'.",
+"אם אומרים על שואב רובוטי שהוא 'משאיר אבק למתחרים', זה טוב או לא?",
+"כלבים אוהבים את השפה העברית בזכות שמות העצם.",
+"מעניין אם בסוף של חופה רפורמית, אומרים לזו שחיתנה אותך 'תודה רבה'.",
+"העיר שנותנת תקווה לתתרנים: יריחו.",
+"מי שעובד במפעל של סוגת אורז מלא אורז מלא.",
+"זוג מתכונן לארח חברים לארוחת ערב. הטלפון מצלצל, האישה עונה ואחרי ה'הלו' הראשון, מכה בראשה ואומרת: 'אשר יגורתי בא!'. בעלה המופתע צועק לה: 'מי זה?! אני לא זוכר שהזמנו אותו'.",
+"הכרובית והכרוב – הם כרובי משפחה?",
+"שילמתי לו 100 שקלים על משחק המילים, והוא אסף השטר.",
+"למה עורכי דין יודעים טוב גיאומטריה? כי הם למדו משפטים.",
+"איש אחד רואה ברחוב את הרב שלו. הוא צועק לו: רבי, רבי! אז הוא ירה בו. לוּ רק ידע עברית.",
+"חברה שלי השאירה לי פתק על המקרר, 'זה לא עובד! נמאס לי, אני עוזבת…' איזו סתומה! פתחתי את המקרר, עובד מצוין. סתם הלכה!",
+"הערב אני עושה על האש עם עשרות פרופסורים. יש לי אסכלה רחבה. למרות שאנטריקוט ירד השנייה מהמנגל, הוא בא-קר.",
+"פלוני: 'אני לא יכול להירדם אחרי כוס קפה'. אלמוני: 'אצלי זה בדיוק הפוך, אני לא יכול לשתות קפה אחרי שאני נרדם'.",
+"איש אחד הרגיש לא טוב והלך לרופא. בדק אותו הרופא ואמר לו: 'אתה בסדר, רק תיטול ויטמין בי-12'. ענה החבר: 'בסדר, אבל איזה ויטמין אני צריך ליטול ב-12?'",
+"חסיד אחד נכנס לתחנת דלק. המתדלק שואל אותו: 'אשראי?' עונה לו החסיד 'אשריך, אשריך'.",
+"אדם עולה לאוטובוס. 'האוטובוס הזה ישיר?' הנהג: 'בשבילך הוא גם ישיר וגם ירקוד'.",
+"למה היתוש החליף את הכיסא? כי הוא חרק.",
+"'תגיד, אתה יודע אם יש מילה ספציפית ל\"נעשה צעיר יותר\"?' 'מצטער.' 'אין על מה, אם אתה לא יודע אתה לא יודע'.",
+"עכביש א': 'וואו הרשת יצאה לי מה זה עקומה'. עכביש ב': 'אל תדאג, זה קורה לטווים ביותר'.",
+"זרקו על רותם סלע ורק אסי עזר פה.",
+"כשהאר\"י נסע לטיולים שנתיים בבית הספר הוא תמיד ישב בספסל האחורי. כי הוא מהמקובלים.",
+"שמעתם על הטי שירט שנתקעה מתחת לסלע? היא חולצה.",
+"שמעתם על כתף הבקר בחנות החיות? היא אומצה.",
+"למה האבנים בנחל אף פעם לא מסכימות ביניהן? כי הם חלוקים.",
+"איך מארק צוקרברג מתנקם? סוגר חשבון.",
+"בחור מיואש בא לרב כי לא הולך לו בדייטים. הרב: 'אני אתן לך סגולה!' הבחור: 'לא, אבל אני רוצה בלונדינית.'",
+"נגה, יש לך נפש חמה. כשאני לידך אני מאדים, ובצדק.",
+"אדם התיישב על ספסל ליד גן ילדים. יוצאת הגננת ושואלת אותו: 'אתה מצפה לילד?' עונה האיש: 'לא, אני סתם שמן.'",
+"למה בנו בכביש מעגל תנועה? כי קר.",
+"אם רופא מכין קפה, זה נס רפואי?",
+"הוא אמר שרק הבוס מחליט והוא לא שם חוט פה.",
+"שמעתם על ההוא שזרק על גאולה אבן, השליך על רותם סלע ועל אסף גרניט?",
+"אם לא הבנתם את השטויות שלי, לא נורא, חיים יבין.",
+"איש אחד נכנס לבית מרקחת עם חוט ביד. שאל הרוקח אם יש לו קרם לחוט.",
+"כרובית וגזר ערכו קרב עד המוות. כשהגזר עמד להפסיד הוא התחנן לחייו, אך הכרובית אינה חסה.",
+"שני עלים יושבים על ענף. פתאום רואים שצומח עלה נוסף. 'מי אתה?' 'אני עלה חדש' (לקרוא במבטא רוסי)",
+"אם מישהו רכב על סוס ועזב, אז הוא פרש או לא?",
+"להודות למישהו בפה מלא, זה מנומס או לא?",
+"קיבלת משכורת? כל השאר זה בונוס.",
+"איך חב\"דניק יודע מה לעשות כשמישהו אומר לו 'תניח לי'?",
+"אם ארכיאולוג העלה חרס בידו, זה סימן שהוא הצליח או לא?",
+"האם למי שעובד במפעל לספרי קודש יש מדי יום סידורים?",
+"מצחיק שלאלה שהדליקו את המנורה קוראים מכבים.",
+"באיסטנבול לא סוגרים דלתות. הם טורקים.",
+"מה עושים הגויים כשהם ישנים? נוכרים.",
+"שקלתי הרבה לפני שהחלטתי לעשות דיאטה.",
+"חיפשתי את עצמי בויקיפדיה ולא מצאתי. מרגיש חסר ערך.",
+"יש לי חבר שלא יודע מאיפה מגיעים מי מעיין. זה נובע מבורות.",
+"רציתי להפתיע את החברה שלי בעבודה בפרחים, אבל במקום שהיא עובדת יש שלט שאוסר כניסה לזרים. אז הכנסתי פרח פרח.",
+"אם קניתי ממישהו חתול בשק והשק היה ריק, אז קניתי חתול בשק או לא?",
+"סבא קרוקודיל אמר לסבתא קרוקודילה: 'את באה לבקר ת'נינים?'.",
+"צעקתי על הטבח שלי שייקח את האוכל שלו לכל ארוחות.",
+"זה לא הוגן שיש רק גרעינים לבנים, לבנות לא מגיע?",
+"האופה עובד קשה מהבוקר ולא מבקש אף-עוגה.",
+"קצת מוזר לראות ראש משפחת פשע תובע, חשבתי שהם יודעים לסחוט.",
+"כשמדען אוהב מדענית הוא מציע לה ניסויים?",
+"אם רוצים לשאול מה השעה, כדאי ללכת לחנות שעונים.",
+"הלכתי ברחוב וקראתי ספר. נתקעתי בעמוד הראשון.",
+"מה כתוב בכניסה לחדר שינה של פולנים? 'פה לנים'.",
+"צ'יף אינדיאני נכנס לבר ומבקש כוס קפה. הברמן: לקחת או לשבת? הצ'יף: לקחת לשבט.",
+"שניצל משקה את הגינה. פתאום עוברת קולה ושואלת אותו: 'אתה משקה?'. הוא עונה לה: 'לא, אני שניצל'.",
+"לכבל מאריך שמקצר, אפשר לקרוא סתם כבל?",
+"אם מתופף טובע, מה יעזור לו? מצילה.",
+"איך אני נדהם מאיש צבא? 'או מג\"ד'.",
+"איך נעיר ירק שנרדם? 'בזילי, קום!'",
+"מי שלא מצליח למצוא דפי כיסוי לסושי שלו: אובד אצות.",
+"קל לזהות פוליתאיסט. זה מובן מאליו.",
+"איך קיר מדבר? בטון מאיים.",
+"אנשים נעלמים בתוכו. לכן קוראים לזה – פוף.",
+"בן גוריון ניגש לגולדה מאיר ואומר לה: 'גולדה, איזו צמה יפה יש לך!'. עונה לו גולדה: 'תודה, זה זלמן שזר'.",
+"שני בייגלך ישבו במכולת, עד שנכנס לקוח וקנה אחד מהם. השני התחיל להתייפח בלי הפסקה. שאל המוכר: מה קרה בייגלה? ענה הבייגלה: היינו כעכים.",
+"אני לא אוהב עופות דורסים, הם ממש בזים לך.",
+"ראש הממשלה טס למדינה של קניבלים. הנשיא קיבל את פניו והשרים את שאר החלקים.",
+"אמרו לי 'גש הלום', אז ניגשתי והלמתי.",
+"איך זוג צרפתים נפרדים? בגט.",
+"אם פנו אליי מגבעתי, כפיר וגולני, זה אומר שקיבלתי הצעות מחי\"ר?",
+"אם אורי גלר היה קוף, הוא היה מכופף הבננות.",
+"הנכד של יפת היה נינוח.",
+"תדהמה בעולם הרכיבה על סוסים! אלוף העולם פרש!",
+"הבוקר קניתי במאפייה קרואסון ובורקס. הקרואסון לא היה טעים אבל הבורקס פיצה.",
+"אם אתם רואים אגוז משונה, אל תלעגו לו. אולי אתם לא מודעים לקשיו."
+];
+
+function showJoke(){
+  // Daily joke based on day of year — same all day, changes daily
+  const n=new Date();
+  const start=new Date(n.getFullYear(),0,0);
+  const dayOfYear=Math.floor((n-start)/864e5);
+  const idx=dayOfYear%JOKES.length;
+  $('#jokeText').textContent=JOKES[idx];
+}
+
 init()})();
 </script>
 </body>
